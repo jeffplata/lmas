@@ -1,16 +1,8 @@
-import os
+from app import create_app
 
-from flask import Flask
+from config import DevelopmentConfig
 
-
-app = Flask(__name__)
-app.config.from_object(os.environ['APP_SETTINGS'])
-print(os.environ['APP_SETTINGS'])
-
-
-@app.route('/')
-def hello():
-    return"Hello World."
+app = create_app(DevelopmentConfig)
 
 
 if __name__ == "__main__":
