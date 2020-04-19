@@ -1,0 +1,102 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/fixes.html" as fixes %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{# {% block content %}
+{% endblock %}
+ #}
+
+
+{% block head %}
+  {{super()}}
+  {{fixes.ie8()}}
+  {# {{ fontawesome_html() }} #}
+{% endblock %}
+
+{% block styles %}
+  {{super()}}
+{#   <link href="/static/css/bootstrap.css" rel="stylesheet">
+  <link href="/static/css/global.css" rel="stylesheet">
+  <link href="/static/css/style.css" rel="stylesheet">
+ #}{% endblock %}
+
+{% block body %}
+
+  {% block navbar %}
+
+
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">Disabled</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown01">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </nav>
+
+
+  {% endblock %}
+
+
+  <div class="container">
+    <div id="main-div" class="with-margins">
+{#
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message | safe }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+#}
+
+      {% import "bootstrap/utils.html" as utils %} {{ utils.flashed_messages(dismissible=True, container=False) }}
+
+      {% block main_content %}{% endblock %}
+
+
+    </div>
+  </div>
+
+  <footer class="navbar-fixed-bottom">
+    <div class="container">
+      {# <p class="text-muted">&copy; <script type="text/javascript">var mdate = new Date(); document.write(mdate.getFullYear());</script>  {{ user_manager.app_name }}</p> #}
+      <p class="text-muted">&copy; <script type="text/javascript">var mdate = new Date(); document.write(mdate.getFullYear());</script>  {{ title }}</p>
+    </div>
+  </footer>
+
+  {% block scripts %}
+    {{super()}}
+{#     <script src="{{ url_for('static', filename='jquery.js') }}" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}" type="text/javascript"></script>
+ #}  {% endblock %}
+
+
+{% endblock %}
