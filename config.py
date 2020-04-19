@@ -11,6 +11,11 @@ class Config(object):
         or "<DATABASE_URL not set>"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
+    # flask-user settings
+    USER_EMAIL_SENDER_EMAIL = "jeffflask@gmail.com"
+    USER_APP_NAME = "LMAS"
+    USER_ENABLE_CHANGE_USERNAME = False
+
 
 class ProductionConfig(Config):
     DEBUG = False
