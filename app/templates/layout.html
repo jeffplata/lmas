@@ -39,25 +39,25 @@
           <a class="navbar-brand" href="/"><b>{{ title }}</b></a>
         </div>
         <div id="navbar" class="collapse navbar-collapse ">
-          <strong>
+          <sstrong>
           <ul class="nav navbar-nav">
             <li><a href="#">Home</a></li>
 {#             <li><a href="{{ url_for('main.index') }}">Home Page</a></li>
             <li><a href="#">Employees</a></li>
             <li><a href="{{ url_for('library.list_sections') }}">Sections</a></li>
             <li><a href="{{ url_for('library.list_payrolls') }}">Payrolls</a></li>
-            <li><a href="{{ url_for('library.list_payroll_groups') }}">Payroll Groups</a></li>
- #}          </ul>
+            <li><a href="{{ url_for('library.list_payroll_groups') }}">Payroll Groups</a></li> #}
+          </ul>
           <ul class="nav navbar-nav navbar-right">
-{#               {% if current_user.is_authenticated %}
-              <li><a href="{{ url_for('user.profile') }}"><span class="fa fa-user"></span> {{current_user.username}}</a></li>
-              <li><a href="{{ url_for('user.logout') }}"><span class="fa fa-sign-out-alt"></span> {{ 'Sign out' }}</a></li>
+              {% if current_user.is_authenticated %}
+                <li><a href="#"><span class="fa fa-user"></span> {{ current_user.username }}</a></li>
+                <li><a href="{{ url_for('user.logout') }}"><span class="fa fa-sign-out-alt"></span> {{ _('Sign out') }}</a></li>
               {% else %}
-                <li><a href="{{ url_for('user.register') }}">{{ 'Register' }}</a></li>
+                <li><a href="{{ url_for('user.register') }}">{{ _('Register') }}</a></li>
                 <li><a href="{{ url_for('user.login') }}"><span class="fa fa-sign-in-alt"></span>  {{ _('Sign in') }}</a></li>
               {% endif %}
- #}            </ul>
-          </strong>
+          </ul>
+          </sstrong>
         </div>{# /.nav-collapse #}
       </div>
     </nav>

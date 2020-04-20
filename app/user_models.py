@@ -17,8 +17,9 @@ class User(Base, UserMixin):
     email = db.Column(db.String(128), nullable=False,
                       unique=True)
     password = db.Column(db.String(255))
-    confirmed_at = db.Column(db.DateTime())
+    email_confirmed_at = db.Column('confirmed_at', db.DateTime())
     is_enabled = db.Column(db.Boolean(), nullable=False, default=False)
+    active = db.Column(db.Boolean())
 
     roles = db.relationship('Role', secondary='auth_user_roles',
                             backref=db.backref('users', lazy='dynamic'))
