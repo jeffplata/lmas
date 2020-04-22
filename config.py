@@ -10,7 +10,8 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or \
+        'you-will-never-guess-sfsdf-3fwesdt-adssewr-ssew232-sdae3-df334555'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') \
         or "<DATABASE_URL not set>"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -26,6 +27,7 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+    ADMINS = ['jeffflask@gmail.com']
 
 
 class ProductionConfig(Config):

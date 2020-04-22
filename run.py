@@ -1,7 +1,7 @@
 """main app."""
 
-from app import create_app
 
+from app import create_app
 from config import DevelopmentConfig
 
 myapp = create_app(DevelopmentConfig)
@@ -20,3 +20,4 @@ Application package: app (folder)
 Application instance: myapp
 
 Heroku Procfile contents: web gunicorn run:myapp ...
+"""

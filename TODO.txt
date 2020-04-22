@@ -1,3 +1,6 @@
+
+Wednesday, 22 April, 2020 10:32:52 PM PST
+Ok now.
 Tuesday, 21 April, 2020 12:26:48 AM PST
 
 dotenv is not the same as autoenv;
