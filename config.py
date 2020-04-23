@@ -16,6 +16,9 @@ class Config(object):
         or "<DATABASE_URL not set>"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
+    # font-awesome settings
+    FONTAWESOME_SERVE_LOCAL = True
+
     # flask-user settings
     USER_EMAIL_SENDER_EMAIL = "jeffflask@gmail.com"
     USER_APP_NAME = "LMAS"
