@@ -21,6 +21,8 @@ class User(Base, UserMixin):
     # is_enabled = db.Column(db.Boolean(), nullable=False, default=False)
     active = db.Column(db.Boolean())
 
+    detail = db.relationship('UserDetail', uselist=False, backref='auth_user')
+
     roles = db.relationship('Role', secondary='auth_user_roles',
                             backref=db.backref('users', lazy='dynamic'))
 
@@ -79,6 +81,22 @@ class UserRoles(Base):
                             'auth_role.id', ondelete='CASCADE'))
 
 
-# @login.user_loader
-# def load_user(id):
-#     return User.query.get(int(id))
+class UserDetail(Base):
+    __tablename__ = "auth_user_detail"
+    user_id = db.Column(db.Integer(),
+                        db.ForeignKey('auth_user.id', ondelete='CASCADE'))
+    last_name = db.Column(db.String(128), nullable=False)
+    first_name = db.Column(db.String(128))
+    middle_name = db.Column(db.String(128))
+    suffix = db.Column(db.String(20))
+
+    full_name = "{}{}{}{}".format(first_name,
+                                  " " + middle_name,
+                                  " " + last_name, " " + suffix)
+
+    def __repr__(self):
+        return "User [{}] {}, {}".format(self.user_id, self.last_name,
+                                         self.first_name)
+
+    def __str__(self):
+        return self.last_name

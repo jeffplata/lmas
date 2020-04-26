@@ -1,3 +1,8 @@
+Sunday, 26 April, 2020 11:17:42 AM PST
+With flask-user 1.0, be sure to confirm users to avoid
+  unnecessary errors (set email_confirmed_at to some date)
+
+
 Wednesday, 22 April, 2020 10:34:03 PM PST
 When using flask-mail or flask-user, and sending mail
   thru Gmail, always check that the 'Allow less secure

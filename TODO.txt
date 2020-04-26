@@ -1,3 +1,8 @@
+Monday, 27 April, 2020 12:17:32 AM PST
+Bootstrap 3 form-control-static
+(edit_user_name.html)
+
+
 Thursday, 23 April, 2020 10:46:37 PM PST
 We can now work on the Real Functions of the system.
 

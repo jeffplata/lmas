@@ -1,0 +1,21 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "layout.html" %}
+
+{% block title %}
+Edit User Name
+{% endblock %}
+
+{% block main_content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-7 col-md-6 col-lg-5 col-centered">
+            <h2>Edit user name</h2>
+            <br/>
+            {{ wtf.quick_form(form, form_type="horizontal", button_map={'submit': 'primary'}, horizontal_columns=('lg', 4, 8)) }}
+            {{ form.last_name.label(class_="col-lg-4") }}{{ form.last_name(class_="col-lg-8 form-control-static") }}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
