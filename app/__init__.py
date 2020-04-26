@@ -49,3 +49,5 @@ def create_app(config_class=Config):
         # mail.send(msg)
 
     return app
+
+# user_manager = create_app().user_manager

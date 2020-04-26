@@ -2,13 +2,14 @@
 {% import "bootstrap/fixes.html" as fixes %}
 
 {% block title %}
-{{ title }}
+{{ config.USER_APP_NAME }}
 {% endblock %}
 
-{# {% block content %}
-{% endblock %}
+{#
+  use 'block main_content' instead
+  {% block content %}
+  {% endblock %}
  #}
-
 
 {% block head %}
   {{super()}}
@@ -18,10 +19,12 @@
 
 {% block styles %}
   {{super()}}
-{#   <link href="/static/css/bootstrap.css" rel="stylesheet">
+{#
+  <link href="/static/css/bootstrap.css" rel="stylesheet">
   <link href="/static/css/global.css" rel="stylesheet">
   <link href="/static/css/style.css" rel="stylesheet">
- #}{% endblock %}
+ #}
+{% endblock %}
 
 {% block body %}
 
@@ -36,21 +39,23 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/"><b>{{ title }}</b></a>
+          <a class="navbar-brand" href="/"><b>{{ config.USER_APP_NAME }}</b></a>
         </div>
         <div id="navbar" class="collapse navbar-collapse ">
           <sstrong>
           <ul class="nav navbar-nav">
             <li><a href="#">Home</a></li>
-{#             <li><a href="{{ url_for('main.index') }}">Home Page</a></li>
+{#
+            <li><a href="{{ url_for('main.index') }}">Home Page</a></li>
             <li><a href="#">Employees</a></li>
             <li><a href="{{ url_for('library.list_sections') }}">Sections</a></li>
             <li><a href="{{ url_for('library.list_payrolls') }}">Payrolls</a></li>
-            <li><a href="{{ url_for('library.list_payroll_groups') }}">Payroll Groups</a></li> #}
+            <li><a href="{{ url_for('library.list_payroll_groups') }}">Payroll Groups</a></li>
+#}
           </ul>
           <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_authenticated %}
-                <li><a href="#"><span class="fa fa-user"></span> {{ current_user.username }}</a></li>
+                <li><a href="{{ url_for('user.edit_user_profile') }}"><span class="fa fa-user"></span> {{ current_user.username }}</a></li>
                 <li><a href="{{ url_for('user.logout') }}"><span class="fa fa-sign-out-alt"></span> {{ _('Sign out') }}</a></li>
               {% else %}
                 <li><a href="{{ url_for('user.register') }}">{{ _('Register') }}</a></li>
@@ -88,7 +93,7 @@
   <footer class="navbar-fixed-bottom">
     <div class="container">
       {# <p class="text-muted">&copy; <script type="text/javascript">var mdate = new Date(); document.write(mdate.getFullYear());</script>  {{ user_manager.app_name }}</p> #}
-      <p class="text-muted">&copy; <script type="text/javascript">var mdate = new Date(); document.write(mdate.getFullYear());</script>  {{ title }}</p>
+      <p class="text-muted">&copy; <script type="text/javascript">var mdate = new Date(); document.write(mdate.getFullYear());</script>  {{ config.USER_APP_NAME }}</p>
     </div>
   </footer>
 

@@ -6,27 +6,34 @@ from app.user_models import User, Role
 
 
 class InitDbCommand(Command):
-    """ Initialize the database."""
+    """Initialize the database."""
 
     def run(self):
         init_db()
 
 
 def init_db():
-    """ Initialize the database."""
+    """Initialize the database."""
     db.drop_all()
     db.create_all()
     create_users()
 
 
 def create_users():
-    """ Create users """
-
+    """Create users."""
     # Create all tables
     db.create_all()
 
     # Adding roles
     admin_role = find_or_create_role('admin', 'Admin')
+    find_or_create_role('member', 'Member')
+    find_or_create_role('checker', 'Checker')
+    find_or_create_role('endorser', 'Endorser')
+    find_or_create_role('committee', 'Committee')
+    find_or_create_role('ceo', 'CEO')
+    find_or_create_role('manager', 'Manager')
+    find_or_create_role('processor', 'Processor')
+    find_or_create_role('payroll', 'Payroll')
 
     # Add users
     find_or_create_user('admin', 'admin@example.com', 'Password1', admin_role)
@@ -37,24 +44,24 @@ def create_users():
 
 
 def find_or_create_role(name, label):
-    """ Find existing role or create new role """
+    """Find existing role or create new role."""
     role = Role.query.filter(Role.name == name).first()
     if not role:
         role = Role(name=name, label=label)
         db.session.add(role)
-    print('admin role found or created')
+    print('{} role found or created'.format(name))
     return role
 
 
 def find_or_create_user(username, email, password, role=None):
-    """ Find existing user or create new user """
+    """Find existing user or create new user."""
     user = User.query.filter(User.email == email).first()
     if not user:
         user = User(username=username,
                     email=email,
                     password=current_app.user_manager.hash_password(password),
-                    is_enabled=True,
-                    confirmed_at=datetime.datetime.utcnow())
+                    active=True,
+                    email_confirmed_at=datetime.datetime.utcnow())
         if role:
             user.roles.append(role)
         db.session.add(user)
