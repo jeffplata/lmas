@@ -1,3 +1,8 @@
+Monday, 27 April, 2020 06:04:52 PM PST
+[ ] Design the Member Profile Page
+
+
+
 Monday, 27 April, 2020 12:17:32 AM PST
 Bootstrap 3 form-control-static
 (edit_user_name.html)

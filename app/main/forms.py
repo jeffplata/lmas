@@ -11,8 +11,9 @@ class UserProfileForm(FlaskForm):
     # let StringField do its job
     first_name = StringField(validators=[DataRequired()])
     last_name = StringField(validators=[DataRequired()])
-    middle_name = StringField(,)
+    middle_name = StringField()
     suffix = StringField()
+    full_name = StringField(render_kw={"readonly": True})
     submit = SubmitField('Submit')
 
 

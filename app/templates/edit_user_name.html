@@ -13,7 +13,17 @@ Edit User Name
             <h2>Edit user name</h2>
             <br/>
             {{ wtf.quick_form(form, form_type="horizontal", button_map={'submit': 'primary'}, horizontal_columns=('lg', 4, 8)) }}
-            {{ form.last_name.label(class_="col-lg-4") }}{{ form.last_name(class_="col-lg-8 form-control-static") }}
+            <form class="form-horizontal">
+                <div class="form-group">
+                    {{ form.last_name.label(class="col-lg-4 control-label") }}
+                    <div class="col-lg-7">
+                        {{ form.last_name(class="form-control") }}
+                    </div>
+                    <div class="col-lg-1">
+                        <a href="#">Edit</a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

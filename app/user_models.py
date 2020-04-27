@@ -1,5 +1,6 @@
 from app import db
 from flask_user import UserMixin
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 # Define a base model for other database tables to inherit
@@ -90,9 +91,13 @@ class UserDetail(Base):
     middle_name = db.Column(db.String(128))
     suffix = db.Column(db.String(20))
 
-    full_name = "{}{}{}{}".format(first_name,
-                                  " " + middle_name,
-                                  " " + last_name, " " + suffix)
+    @hybrid_property
+    def full_name(self):
+        return "{}{}{}{}".format(
+            self.first_name,
+            " " + self.middle_name if self.middle_name else "",
+            " " + self.last_name if self.last_name else "",
+            " " + self.suffix if self.suffix else "")
 
     def __repr__(self):
         return "User [{}] {}, {}".format(self.user_id, self.last_name,
