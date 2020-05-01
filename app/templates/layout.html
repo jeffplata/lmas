@@ -42,7 +42,7 @@
         <div id="navbar" class="collapse navbar-collapse ">
           <sstrong>
           <ul class="nav navbar-nav">
-            <li><a href="#">Home</a></li>
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
 {#
             <li><a href="{{ url_for('main.index') }}">Home Page</a></li>
             <li><a href="#">Employees</a></li>
@@ -90,7 +90,6 @@
 
   <footer class="footer">
     <div class="container">
-      {# <p class="text-muted">&copy; <script type="text/javascript">var mdate = new Date(); document.write(mdate.getFullYear());</script>  {{ user_manager.app_name }}</p> #}
       <p class="text-muted">&copy; <script type="text/javascript">var mdate = new Date(); document.write(mdate.getFullYear());</script>  {{ config.USER_APP_NAME }}</p>
     </div>
   </footer>

@@ -1,11 +1,22 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, TextAreaField,\
+    DecimalField, DateField
 from wtforms.validators import DataRequired
 # from app import db
 # from app.models import Office, Payroll_Type
 
 
 class UserProfileForm(FlaskForm):
+    """Form to display user profile."""
+
+    full_name = StringField(render_kw={"readonly": True})
+    position = StringField(render_kw={"readonly": True})
+    salary = StringField(render_kw={"readonly": True})
+    office = StringField(render_kw={"readonly": True})
+    beneficiaries = TextAreaField(render_kw={"readonly": True, 'style': 'resize:none'})
+
+
+class UserNameForm(FlaskForm):
     """Form to edit user details."""
 
     # let StringField do its job
@@ -15,6 +26,14 @@ class UserProfileForm(FlaskForm):
     suffix = StringField()
     full_name = StringField(render_kw={"readonly": True})
     submit = SubmitField('Submit')
+
+
+class MemberAccountForm(FlaskForm):
+    """Form to display member account details, like TAV, etc."""
+
+    tav = DecimalField("TAV")
+    remit_date = DateField("Last Remittance")
+    remit_amount = DecimalField("")
 
 
 # class SectionForm(FlaskForm):

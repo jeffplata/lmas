@@ -46,7 +46,7 @@ body { padding-top: 0px; }
     /* di naman nagamit */
     float: none;
     margin: 0 auto;
-    width: 100% !important; 
+    width: 100% !important;
  }
 
 /* this will prevent links from being revealed
@@ -55,4 +55,14 @@ body { padding-top: 0px; }
    a[href]:after {
     content: none !important;
    }
+}
+
+
+/* center columns
+ */
+.col-center-block {
+    float: none;
+    display: block;
+    margin: 0 auto;
+    /* margin-left: auto; margin-right: auto; */
 }
