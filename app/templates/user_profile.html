@@ -14,54 +14,64 @@ User Profile
 
             <h4 class="h4-gray">General Information</h4>
 
-            <form class="form form-basic">
+            <form class="form">
                 <div class="form-group">
-                    {{ form.full_name.label(class="col-lg-4 control-label") }}
-                    <div class="col-lg-7">
-                        {{ form.full_name(class="form-control") }}
-                    </div>
-                    <div class="col-lg-1">
+                    <div class="row">
+                      {{ form.full_name.label(class_="col-xs-6 control-label") }}
+                      <div class="col-xs-6 text-right">
                         <a href="{{ url_for('main.edit_user_name', user_id=user_id) }}">Edit</a>
+                      </div>
+                      <div class="col-xs-12">
+                          {{ form.full_name(class="form-control") }}
+                      </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    {{ form.position.label(class="col-lg-4 control-label") }}
-                    <div class="col-lg-7">
-                        {{ form.position(class="form-control") }}
-                    </div>
-                    <div class="col-lg-1">
+                    <div class="row">
+                      {{ form.position.label(class_="col-xs-6 control-label") }}
+                      <div class="col-xs-6 text-right">
                         <a href="{{ url_for('main.edit_user_name', user_id=user_id) }}">Edit</a>
+                      </div>
+                      <div class="col-xs-12">
+                          {{ form.position(class="form-control") }}
+                      </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    {{ form.salary.label(class="col-lg-4 control-label") }}
-                    <div class="col-lg-7">
-                        {{ form.salary(class="form-control") }}
-                    </div>
-                    <div class="col-lg-1">
+                    <div class="row">
+                      {{ form.salary.label(class_="col-xs-6 control-label") }}
+                      <div class="col-xs-6 text-right">
                         <a href="{{ url_for('main.edit_user_name', user_id=user_id) }}">Edit</a>
+                      </div>
+                      <div class="col-xs-12">
+                          {{ form.salary(class="form-control") }}
+                      </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    {{ form.office.label(class="col-lg-4 control-label") }}
-                    <div class="col-lg-7">
-                        {{ form.office(class="form-control") }}
-                    </div>
-                    <div class="col-lg-1">
+                    <div class="row">
+                      {{ form.office.label(class_="col-xs-6 control-label") }}
+                      <div class="col-xs-6 text-right">
                         <a href="{{ url_for('main.edit_user_name', user_id=user_id) }}">Edit</a>
+                      </div>
+                      <div class="col-xs-12">
+                          {{ form.office(class="form-control") }}
+                      </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    {{ form.beneficiaries.label(class="col-lg-4 control-label") }}
-                    <div class="col-lg-7">
-                        {{ form.beneficiaries(class="form-control") }}
-                    </div>
-                    <div class="col-lg-1">
+                    <div class="row">
+                      {{ form.beneficiaries.label(class_="col-xs-6 control-label") }}
+                      <div class="col-xs-6 text-right">
                         <a href="{{ url_for('main.edit_user_name', user_id=user_id) }}">Edit</a>
+                      </div>
+                      <div class="col-xs-12">
+                          {{ form.beneficiaries(class="form-control") }}
+                      </div>
                     </div>
                 </div>
 
