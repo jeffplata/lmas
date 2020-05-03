@@ -31,7 +31,7 @@ class User(Base, UserMixin):
         return '<User %r>' % (self.username)
 
     def __str__(self):
-        return self.username
+        return self.username or self.email
 
     # def set_password(self, password):
     #     self.password = generate_password_hash(password)
@@ -61,14 +61,14 @@ class User(Base, UserMixin):
 class Role(Base):
     __tablename__ = 'auth_role'
     # id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(50), unique=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
     label = db.Column(db.Unicode(255), server_default=u'')
 
     def __repr__(self):
         return '<Role %r>' % (self.name)
 
     def __str__(self):
-        return self.name
+        return self.name or ""
 
 
 class UserRoles(Base):
@@ -104,4 +104,6 @@ class UserDetail(Base):
                                          self.first_name)
 
     def __str__(self):
-        return self.last_name
+        return "{}{}".format(
+            self.last_name,
+            ", " + self.first_name if self.first_name else "")

@@ -40,6 +40,17 @@ def create_app(config_class=Config):
         app.register_blueprint(main_bp)
         app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 
+        from app.filters import blueprint as filters_bp
+        app.register_blueprint(filters_bp)
+
+        from app.member import bp as member_bp
+        app.register_blueprint(member_bp)
+
+        from app.fadmin import bp as fadmin_bp
+        app.register_blueprint(fadmin_bp)
+        from app.fadmin.controller import admin
+        admin.init_app(app)
+
         # from flask_mail import Message
 
         # msg = Message(subject="Hello",

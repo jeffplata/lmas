@@ -1,8 +1,10 @@
+from datetime import datetime
 from app.main import bp
 from flask import render_template, flash, session, redirect
 from flask_user import login_required
 from .forms import UserProfileForm, UserNameForm, MemberAccountForm
 from app.user_models import UserDetail
+from app.member.models import Service
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -15,10 +17,26 @@ def index():
 
 
 @bp.route('/dashboard')
+@login_required
 def dashboard():
     form = MemberAccountForm()
     form.tav.data = 159231
-    return render_template('main/dashboard.html', form=form)
+    form.remit_date.data = datetime.strptime('3/20/2020', '%m/%d/%Y')
+    form.remit_amount.data = 20009
+
+    services = []
+    d = 'Maximum loanable amount: 80% of TAV\n' \
+        '12-, 24-, and 36-month term\n' \
+        'Renewable after 25% payment.'
+    s = Service(id=1, name='Regular', description=d)
+    services.append(s)
+    d = 'Maximum loanable amount: 80% of Basic Pay\n' \
+        '1-time payment\n' \
+        'Payment due on May 15, 2020.'
+    s = Service(id=2, name='Special', description=d)
+    services.append(s)
+
+    return render_template('main/dashboard.html', form=form, services=services)
 
 
 @bp.route('/user-profile/<int:user_id>', methods=['GET', 'POST'])

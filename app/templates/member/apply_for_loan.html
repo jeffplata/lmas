@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% set title = "Apply for Loan" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="col-sm-7 col-md-6 col-lg-5 ">
+  <h3>{{ title }}</h3>
+  {{ user_id }}
+  <br>
+  {{ service_id }}
+
+  <table class="table-condensed">
+    <tbody>
+        <tr>
+          <td>
+            For: {{ user.full_name }}
+          </td>
+
+        </tr>
+
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

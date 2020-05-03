@@ -14,71 +14,60 @@ Dashboard
 
             <h4 class="h4-gray">Your account</h4>
 
-            {#
-            <form class="form-horizontal">
-
-                <div class="form-group">
-                    {{ form.tav.label(class_="col-lg-4 control-label") }}
-                    <div class="col-lg-8">
-                        <p class="form-control-static">
-                            {{ "{:,.2f}".format(form.tav.data) }}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    {{ form.remit_date.label(class_="col-lg-4 control-label") }}
-                    <div class="col-lg-8">
-                        <p class="form-control-static">
-                            {{ form.remit_date.data  }}
-                        </p>
-                    </div>
-                </div>
-
-            </form>
-            #}
-
             <div class="panel panel-default">
-                {# <div class="panel-heading h4-gray">General Info</div> #}
                 <div class="panel-body">
                     <table class="table-condensed">
                         <tbody>
                             <tr>
-                                {% set header1 = form.tav.label %}
-                                <td align="right">TAV</td>
+                                <td align="right">{{form.tav.label.text}}</td>
                                 <td><b>{{ "{:,.2f}".format(form.tav.data) }}</b></td>
                             </tr>
                             <tr>
-                                <td align="right">Last Remittance</td>
-                                <td><b>{{ form.remit_date.data }}</b></td>
+                                <td align="right">{{form.remit_date.label.text}}</td>
+                                <td><b>{{ form.remit_date.data | date }}</b></td>
                             </tr>
                             <tr>
                                 <td align="right"></td>
                                 <td><b>{{ "{:,.2f}".format(form.remit_amount.data or 0) }}</b></td>
                             </tr>
 
-
                         </tbody>
-
-
                     </table>
 
-
-
-
                 </div>
-
-
 
             </div>
 
             <br>
-            <br>
-            <br>
-            <h4 class="h4-gray">Your Loans</h4>
-            <br>
-            <br>
-            <br>
+            <h4 class="h4-gray">Services</h4>
+
+            {% if services %}
+                <div class="panel panel-default">
+                     <div class="panel-body">
+                        <table class="table-condensed">
+                            {% for service in services %}
+                            <tr>
+                                <big><strong>{{ service.name }}</strong></big><br>
+                                {% set s = service.description.split('\n') %}
+                                <!-- {{ service.description}}<br> -->
+                                <small>
+                                {% for l in s %}
+                                {{ l }}<br>
+                                {% endfor %}
+                                </small>
+                                <a href="{{ url_for('member.apply_for_loan', user_id=current_user.id, service_id=service.id) }}">
+                                  <input type='button' class="btn btn-primary btn-md" value='Apply now'>
+                                </a>
+                                <br>
+                                <br>
+
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+
 
         </div>
     {# </div> #}
