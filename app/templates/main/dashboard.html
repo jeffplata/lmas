@@ -5,6 +5,15 @@
 Dashboard
 {% endblock %}
 
+{% block head %}
+  {{ super() }}
+  <style>
+    .more-text {
+        color: green;
+    }
+  </style>
+{% endblock %}
+
 {% block main_content %}
 
 {# <div class="container"> #}
@@ -33,6 +42,9 @@ Dashboard
 
                         </tbody>
                     </table>
+                    <a href="{{ url_for('member.contributions', user_id=current_user.id) }}">
+                        <div class="text-right">see more...</div>
+                    </a>
 
                 </div>
 
@@ -64,6 +76,10 @@ Dashboard
                             </tr>
                             {% endfor %}
                         </table>
+                    <a href="#">
+                        <div class="text-right">see more...</div>
+                    </a>
+
                     </div>
                 </div>
             {% endif %}

@@ -17,6 +17,9 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_ECHO = True
 
+    # app specific settings
+    DEFAULT_USR_PWD = os.environ.get('DEFAULT_USR_PWD') or 'Password1'
+
     # font-awesome settings
     FONTAWESOME_SERVE_LOCAL = True
 
@@ -29,6 +32,7 @@ class Config(object):
     USER_ALLOW_LOGIN_WITHOUT_CONFIRMED_EMAIL = True
     USER_ENABLE_CHANGE_PASSWORD = True
     USER_AFTER_LOGIN_ENDPOINT = 'main.dashboard'
+    USER_AFTER_LOGOUT_ENDPOINT = 'user.login'
 
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)

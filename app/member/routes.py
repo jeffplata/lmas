@@ -15,3 +15,13 @@ def apply_for_loan(user_id, service_id):
     return render_template('member/apply_for_loan.html',
                            user=user,
                            service=service)
+
+
+@bp.route('/contributions/<int:user_id>')
+@login_required
+def contributions(user_id):
+    c = [
+        [2010, 4360.01, 8720.02, 13080.03],
+        [2011, 4862.12, 9724.24, 14586.36]
+    ]
+    return render_template('member/contributions.html', contributions=c)

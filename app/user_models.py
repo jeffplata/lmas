@@ -15,10 +15,14 @@ class Base(db.Model):
 class User(Base, UserMixin):
     __tablename__ = 'auth_user'
     username = db.Column(db.String(128), nullable=True)
-    email = db.Column(db.String(128), nullable=False,
-                      unique=True)
+    email = db.Column(db.String(128), nullable=False, unique=True)
+
     password = db.Column(db.String(255))
-    email_confirmed_at = db.Column(db.DateTime())
+
+    # the confirm date should be set automatically as user email confirmation
+    #   will not be implemented
+    email_confirmed_at = db.Column(db.DateTime,
+                                   default=db.func.current_timestamp())
     # is_enabled = db.Column(db.Boolean(), nullable=False, default=False)
     active = db.Column(db.Boolean())
 
@@ -26,6 +30,11 @@ class User(Base, UserMixin):
 
     roles = db.relationship('Role', secondary='auth_user_roles',
                             backref=db.backref('users', lazy='dynamic'))
+
+    # this is a workaround for for Flask-Admin 'Already exist.' error
+    #   on fields with unique=True (see email field in User)
+    def __eq__(self, other):
+        return self.id == other.id if other else False
 
     def __repr__(self):
         return '<User %r>' % (self.username)

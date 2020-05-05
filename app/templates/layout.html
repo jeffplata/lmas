@@ -53,6 +53,10 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_authenticated %}
+                {% if current_user.has_roles('admin') %}
+                  <li><a href="{{ url_for('admin.index') }}">
+                    <button class="btn btn-xs btn-warning">Admin</button></a></li>
+                {% endif %}
                 <li><a href="{{ url_for('main.user_profile', user_id=current_user.id) }}"><span class="fa fa-user"></span> {{ current_user.username or current_user.email }}</a></li>
                 <li><a href="{{ url_for('user.logout') }}"><span class="fa fa-sign-out-alt"></span> {{ _('Sign out') }}</a></li>
               {% else %}
