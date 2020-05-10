@@ -14,8 +14,8 @@ class Config(object):
         'you-will-never-guess-sfsdf-3fwesdt-adssewr-ssew232-sdae3-df334555'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') \
         or "<DATABASE_URL not set>"
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ECHO = False
 
     # app specific settings
     DEFAULT_USR_PWD = os.environ.get('DEFAULT_USR_PWD') or 'Password1'

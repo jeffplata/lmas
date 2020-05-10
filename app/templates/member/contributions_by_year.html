@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% set title = "Contributions" %}
+
+{% block title %}
+{{ title }} : {{ year }}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="col-sm-6 col-md-6 col-lg-7 ">
+  <ol class="breadcrumb">
+    <li><a href="{{ url_for('member.contributions', user_id=current_user.id) }}">Contributions</a></li>
+    <li class="active">{{ year }}</li>
+  </ol>
+  <h3>{{ title }} : {{ year }}</h3>
+  <br>
+
+  <div class="table-responsive">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>Transaction Date</th>
+        <th>Branch</th>
+        <th>Transaction Type</th>
+        <th class="text-right">Amount</th>
+        <th>Date Paid</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in contributions %}
+        <tr>
+          <td>{{ c[0] }}</td>
+          <td>{{ c[1] }}</td>
+          <td>{{ c[2] }}</td>
+          <td align="right">{{ c[3]|money }}</td>
+          <td>{{ c[4] }}</td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+  </table>
+  </div>
+</div>
+
+{% endblock %}

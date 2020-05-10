@@ -32,6 +32,7 @@ def assign_links_to_admin():
 
 
 class MyModelView(ModelView):
+    column_display_pk = True
 
     def is_accessible(self):
         return (not current_user.is_anonymous) and \

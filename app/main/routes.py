@@ -35,7 +35,7 @@ def dashboard():
     #     'Payment due on May 15, 2020.'
     # s = Service(id=2, name='Special', description=d)
     # services.append(s)
-    services = Service.query.all()
+    services = Service.query.order_by(Service.id).all()
 
     return render_template('main/dashboard.html', form=form, services=services)
 

@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% set title = "Services" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="col-sm-7 col-md-6 col-lg-6 ">
+  <h3>{{ title }}</h3>
+  <br>
+
+  {# <div class="panel panel-default"> #}
+
+    {% for service in services %}{#
+      <b>{{ s.name }}</b>
+      <br>
+      {{ s.description }}
+      <br>
+      <br> #}
+
+
+      <big><strong>{{ service.name }}</strong></big><br>
+      {% set s = service.description.split('\n') %}
+      {# <small> #}
+      {% for l in s %}
+      {{ l }}<br>
+      {% endfor %}
+      {# </small> #}
+      <a href="{{ url_for('member.apply_for_loan', user_id=current_user.id, service_id=service.id) }}">
+        <input type='button' class="btn btn-primary btn-md" value='Apply now'>
+      </a>
+      <br>
+      <br>
+
+    {% endfor %}
+
+  {# </div> #}
+
+</div>
+
+{% endblock %}

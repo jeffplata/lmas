@@ -37,7 +37,7 @@ Dashboard
                             </tr>
                             <tr>
                                 <td align="right"></td>
-                                <td><b>{{ "{:,.2f}".format(form.remit_amount.data or 0) }}</b></td>
+                                <td><b>{{ (form.remit_amount.data or 0)|money }}</b></td>
                             </tr>
 
                         </tbody>
@@ -76,7 +76,7 @@ Dashboard
                             </tr>
                             {% endfor %}
                         </table>
-                    <a href="#">
+                    <a href="{{ url_for('member.services') }}">
                         <div class="text-right">see more...</div>
                     </a>
 
