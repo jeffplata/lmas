@@ -12,7 +12,29 @@
   <h3>{{ title }}</h3>
   <br>
 
-  For: {{ user.detail.full_name }}
+    <table class="table-condensed">
+        <tbody>
+            <tr>
+                <td align="right">For:</td>
+                <td><b>{{ user.detail.full_name }}</b></td>
+            </tr>
+            <tr>
+                <td align="right">Loan Type:</td>
+                <td><b>{{ service.name }}</b></td>
+            </tr>
+            <td></td>
+            <td>
+                {% set s = service.description.split('\n') %}
+                <!-- {{ service.description}}<br> -->
+                <small class="text-muted">
+                {% for l in s %}
+                {{ l }}<br>
+                {% endfor %}
+                </small>
+            </td>
+
+        </tbody>
+    </table>
 
 </div>
 

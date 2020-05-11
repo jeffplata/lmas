@@ -11,7 +11,8 @@ from app.member.models import Service
 def apply_for_loan(user_id, service_id):
     # TODO: continue here
     user = User.query.get(user_id)
-    print(user.detail.last_name)
+    if not user.detail:
+        return render_template('member/member_not_defined.html')
     service = Service.query.get(service_id)
     return render_template('member/apply_for_loan.html',
                            user=user,
