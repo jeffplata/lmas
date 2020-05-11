@@ -19,19 +19,36 @@
                 <td><b>{{ user.detail.full_name }}</b></td>
             </tr>
             <tr>
-                <td align="right">Loan Type:</td>
-                <td><b>{{ service.name }}</b></td>
+                <td align="right" valign="top">Loan Type:</td>
+                <td><b>{{ service.name }}</b><br>
+                    {% set s = service.description.split('\n') %}
+                    <!-- {{ service.description}}<br> -->
+                    <small class="text-muted">
+                    {% for l in s %}
+                    {{ l }}<br>
+                    {% endfor %}
+                    </small>
+                </td>
             </tr>
-            <td></td>
-            <td>
-                {% set s = service.description.split('\n') %}
-                <!-- {{ service.description}}<br> -->
-                <small class="text-muted">
-                {% for l in s %}
-                {{ l }}<br>
-                {% endfor %}
-                </small>
-            </td>
+            <tr>
+                <td align="right">Interest Rate:</td>
+                <td><b>{{ service.interest_rate }}</b></td>
+            </tr>
+            <tr>
+                <td align="right">Amount:</td>
+                <td><input type="text" class="form-control" name="amount"></td>
+            </tr>
+            <tr>
+                <td align="right">Terms:</td>
+                <td><select class="form-control">
+                    <option>1</option>
+                    <option>-</option>
+                    <option>2</option>
+                    <option>3</option>
+                    </select>
+                    {# TODO: continue here #}
+                </td>
+            </tr>
 
         </tbody>
     </table>
