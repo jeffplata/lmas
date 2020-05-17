@@ -11,3 +11,12 @@ class Service(Base):
     max_term = db.Column(db.Integer(), nullable=False)
 
     active = db.Column(db.Boolean(), default=True)
+
+
+class AmortizationSchedule(db.Model):
+	__abstract__ = True
+	due_date = db.Column(db.Date())
+	previous_balance = db.Column(db.Numeric(15,2))
+	principal = db.Column(db.Numeric(15,2))
+	interest = db.Column(db.Numeric(15,2))
+	ideal_balance = db.Column(db.Numeric(15,2))

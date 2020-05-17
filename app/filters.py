@@ -6,9 +6,9 @@ blueprint = flask.Blueprint('filters', __name__)
 @blueprint.app_template_filter('date')
 def date1(date, format='short'):
     if format == 'long':
-        return date.strftime('%B %-d, %Y')
+        return date.strftime('%B %d, %Y')
     elif format == 'short':
-        return date.strftime('%-m-%-d-%Y')
+        return date.strftime('%m/%d/%Y')
 
 
 @blueprint.app_template_filter('money')

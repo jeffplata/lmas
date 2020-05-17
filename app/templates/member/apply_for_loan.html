@@ -1,3 +1,4 @@
+{% import "bootstrap/wtf.html" as wtf %}
 {% extends "layout.html" %}
 
 {% set title = "Apply for Loan" %}
@@ -8,9 +9,11 @@
 
 {% block main_content %}
 
-<div class="col-sm-7 col-md-6 col-lg-5 ">
+<div class="col-sm-10 ">
   <h3>{{ title }}</h3>
   <br>
+
+  <h4 class="h4-gray">Loan details</h4>
 
     <table class="table-condensed">
         <tbody>
@@ -20,38 +23,98 @@
             </tr>
             <tr>
                 <td align="right" valign="top">Loan Type:</td>
-                <td><b>{{ service.name }}</b><br>
+                <td><b>{{ service.name }}</b><br>{# 
                     {% set s = service.description.split('\n') %}
-                    <!-- {{ service.description}}<br> -->
                     <small class="text-muted">
                     {% for l in s %}
                     {{ l }}<br>
                     {% endfor %}
-                    </small>
+                    </small> #}
                 </td>
             </tr>
             <tr>
                 <td align="right">Interest Rate:</td>
                 <td><b>{{ service.interest_rate }}</b></td>
             </tr>
+
+            
+            <form action="" method="POST">
             <tr>
                 <td align="right">Amount:</td>
-                <td><input type="text" class="form-control" name="amount"></td>
-            </tr>
+                {# <td><input type="text" class="form-control" id="amount" name="amount" value="{{form.amount.data}}"></td> #}
+                {# <td>{{ wtf.form_field(form.amount) }}</td> #}
+            </tr>{# 
             <tr>
                 <td align="right">Terms:</td>
-                <td><select class="form-control">
-                    <option>1</option>
-                    <option>-</option>
-                    <option>2</option>
-                    <option>3</option>
+                <td><select class="form-control" id="terms" name="terms">
+                    {% for i in form.terms.choices %}
+                        <option value={{ i[0] }} {% if i[0] == form.terms.data%}selected{% endif %}>{{ i[1] }}
+                        </option>
+                    {% endfor %}
                     </select>
-                    {# TODO: continue here #}
+                </td>
+            </tr> #}
+            <tr>
+                <td></td>
+                <td>
+                    <input type="button" class="btn btn-primary" value="Continue">
+                    <input type="submit" class="btn" name="recalc" value="Re-calculate" formaction="{{ form.submit }}">
+                    {# {{ wtf.form_field(form.continue_1 )}} #}
                 </td>
             </tr>
+            </form>
 
         </tbody>
     </table>
+
+    {{ wtf.quick_form(form) }}
+
+    <h4 class="h4-gray">Adjustments</h4>
+    <table class="table-condensed">
+        <tbody>
+            <tr>
+                <td align="right">Balance:</td>
+                <td align="right">{{ balance|money }}</td>
+            </tr>
+            <tr>
+                <td align="right">Processing Fee:</td>
+                <td align="right">{{ process_fee|money }}</td>
+            </tr>
+            <tr>
+                <td align="right">Net Proceeds:</td>
+                <td align="right"><font size="+1">{{ net_proceeds|money }}</font></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <div class="col-sm-12">
+    <h4 class="h4-gray">Amortization Schedule</h4>
+    <table class="table-condensed table-striped table-responsive">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Due Date</th>
+                <th>Principal</th>
+                <th>Interest</th>
+                <th>Total</th>
+                <th>Ideal Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for am in amortization %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ am.due_date | date }}</td>
+                <td align="right">{{ am.principal | money }}</td>
+                <td align="right">{{ am.interest | money }}</td>
+                <td align="right" style="background-color : lightgray;">{{ (am.principal + am.interest) | money }}</td>
+                <td align="right">{{ am.ideal_balance | money }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
 
 </div>
 
