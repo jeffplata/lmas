@@ -41,9 +41,9 @@
             <form action="" method="POST">
             <tr>
                 <td align="right">Amount:</td>
-                {# <td><input type="text" class="form-control" id="amount" name="amount" value="{{form.amount.data}}"></td> #}
-                {# <td>{{ wtf.form_field(form.amount) }}</td> #}
-            </tr>{# 
+                <td><input type="text" class="form-control" id="amount" name="amount" value="{{form.amount.data}}"></td>
+                <td>{{ wtf.form_field(form.amount) }}</td>
+            </tr>
             <tr>
                 <td align="right">Terms:</td>
                 <td><select class="form-control" id="terms" name="terms">
@@ -53,13 +53,15 @@
                     {% endfor %}
                     </select>
                 </td>
-            </tr> #}
+            </tr>
             <tr>
                 <td></td>
                 <td>
+                    {{ form.csrf_token() }}
                     <input type="button" class="btn btn-primary" value="Continue">
                     <input type="submit" class="btn" name="recalc" value="Re-calculate" formaction="{{ form.submit }}">
-                    {# {{ wtf.form_field(form.continue_1 )}} #}
+                    {{ form.continue_1 }}
+                    {{ wtf.form_field(form.continue_1 )}}
                 </td>
             </tr>
             </form>

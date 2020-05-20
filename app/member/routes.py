@@ -8,37 +8,38 @@ from datetime import datetime
 from decimal import Decimal
 
 
-amount = 51000
-terms = 12
-
 @bp.route('/apply-for-loan/<int:user_id>/<int:service_id>',
           methods=['GET', 'POST'])
 @login_required
 def apply_for_loan(user_id, service_id):
     # TODO: continue here
+    # if not user, then user = ...
     user = User.query.get(user_id)
     if not user.detail:
         return render_template('member/member_not_defined.html')
     service = Service.query.get(service_id)
-    # loan_amount = 51000
+
     form = ApplyForLoanForm()
-    # form.amount.data = 51000
-    # form.terms.data = 12
-    global amount
-    global terms
-    form.amount.data = amount
-    form.terms.data = terms
     form.terms.choices = [(x, str(x)) for x in 
         range(service.min_term,service.max_term+1)]
-
     if form.validate_on_submit():
         print("==========")
         print(form.amount.data)
-        amount = form.amount.data
-        terms = form.terms.data
+        # amount = form.amount.data
+        # terms = form.terms.data
+        # return redirect( url_for('member.apply_for_loan', 
+        #                          user_id=user.id, 
+        #                          service_id=service.id))
 
-    form.amount.data = amount
-    form.terms.data = terms
+    if not form.amount.data:
+        form.amount.data = 51000
+    if not form.terms.data:
+        form.terms.data = 12
+    # if not form.terms.choices:
+    # form.terms.choices = []
+    # form.terms.choices = [(x, str(x)) for x in 
+    #     range(service.min_term,service.max_term+1)]
+
     balance = 5500
     process_fee = 250
     net_proceeds = form.amount.data - balance - process_fee
