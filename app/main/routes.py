@@ -24,17 +24,6 @@ def dashboard():
     form.remit_date.data = datetime.strptime('3/20/2020', '%m/%d/%Y')
     form.remit_amount.data = 20009
 
-    # services = []
-    # d = 'Maximum loanable amount: 80% of TAV\n' \
-    #     '12-, 24-, and 36-month term\n' \
-    #     'Renewable after 25% payment.'
-    # s = Service(id=1, name='Regular', description=d)
-    # services.append(s)
-    # d = 'Maximum loanable amount: 80% of Basic Pay\n' \
-    #     '1-time payment\n' \
-    #     'Payment due on May 15, 2020.'
-    # s = Service(id=2, name='Special', description=d)
-    # services.append(s)
     services = Service.query.order_by(Service.id).all()
 
     return render_template('main/dashboard.html', form=form, services=services)

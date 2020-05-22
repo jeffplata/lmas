@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% set title = "Application successful." %}
+
+{% block title %}
+{{ config.USER_APP_NAME }}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="col-sm-7 col-md-6 col-lg-5 ">
+  <h3>{{ title }}</h3>
+  <br>
+
+  Your loan application has been successfully submitted.
+  <br>
+  <a href="{{ url_for('main.dashboard') }}">
+    <input type="button" class="btn btn-primary" name=ok value="Ok">
+	</a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "layout.html" %}
+
+{% set title = "Apply for Loan" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="col-sm-12 ">
+  <h3>{{ title }}</h3>
+  <br>
+
+  <h4 class="h4-gray">Bank details</h4>
+
+  	<div class="row">
+  	<div class="col-sm-6 col-md-6 col-lg-6">
+	<table class="table-condensed">
+		<tbody>
+			
+			<form action="" method="POST">
+				{{ form.csrf_token() }}
+				<tr>
+					<td align="right">Bank Name:</td>
+					<td><select class="form-control" id="bank_name" name="bank_name">
+						{% for i in form.bank_name.choices %}
+							<option value={{ i[0] }} {% if i[0] == form.bank_name.data%}selected{% endif %}>{{ i[1] }}
+							</option>
+						{% endfor %}
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">Account&nbsp;Number:</td>
+					<td><input type="text" class="form-control" id="account_number" name="account_number" required value="{{ form.account_number.data }}"></td>
+				</tr>
+				<tr>
+					<td align="right">Account&nbsp;Name:</td>
+					<td><input type="text" class="form-control" id="account_name" name="account_name" required value="{{ form.account_name.data }}"></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<input type="submit" class="btn btn-primary" name="submit" value="Submit" formaction="{{ form.submit }}">
+					</td>
+				</tr>
+			</form>
+
+		</tbody>
+	</table>
+	</div>
+
+	<div class="col-sm-6 col-md-6 col-lg-6">
+		<div class="panel panel-default">
+			<div class="panel-body">
+			<small><small>
+				<b>Loan Details:</b>
+				<br>
+				<table class="table-condensed">
+					<tr>
+						<td>Amount:</td>
+						<td>{{ loan.amount }}</td>
+					</tr>
+					<tr>
+						<td>Terms:</td>
+						<td>{{ loan.terms }}</td>
+					</tr>
+				</table>
+			</small></small>
+			</div>
+		</div>
+
+	</div>
+	</div>
+
+
+	
+
+</div>
+
+{% endblock %}
