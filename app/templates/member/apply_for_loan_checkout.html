@@ -20,7 +20,7 @@
 	<table class="table-condensed">
 		<tbody>
 			
-			<form action="" method="POST">
+			<form action="{{ url_for('member.apply_for_loan_checkout', user=user, service=service, loan=loan) }}" method="POST">
 				{{ form.csrf_token() }}
 				<tr>
 					<td align="right">Bank Name:</td>
@@ -39,6 +39,11 @@
 				<tr>
 					<td align="right">Account&nbsp;Name:</td>
 					<td><input type="text" class="form-control" id="account_name" name="account_name" required value="{{ form.account_name.data }}"></td>
+				</tr>
+				<tr>
+					<td align="right">Save&nbsp;Account:</td>
+					<td>{{ form.save_account }}</td>
+					{# <td><input type="checkbox" class="form-control checkbox" id="save_account" name="save_account" value="{{ form.save_account.data }}"></td> #}
 				</tr>
 				<tr>
 					<td></td>
@@ -60,13 +65,56 @@
 				<br>
 				<table class="table-condensed">
 					<tr>
-						<td>Amount:</td>
-						<td>{{ loan.amount }}</td>
+						<td width="100px;">
+							For:<br>
+							Loan Type:<br>
+							Amount:<br>
+							Terms:
+						</td>
+						<td>{{ user.detail.full_name }}<br>
+							{{ service.name }}<br>
+							{{ loan.amount|money }}<br>
+							{{ loan.terms }} month{{loan.terms|pluralize }}
+						</td>
 					</tr>
+				</table>
+				<b>Adjustments:</b>
+				<br>
+				<table class="table-condensed">
 					<tr>
-						<td>Terms:</td>
-						<td>{{ loan.terms }}</td>
+						<td width="100px;">Previous Balance:<br>
+							Processing Fee:<br>
+							Net Proceeds:
+						</td>
+						<td align="right">{{ loan.previous_balance|money }}<br>
+							{{ loan.processing_fee|money }}<br>
+							{{ loan.net_proceeds|money }}
+						</td>
 					</tr>
+				</table>
+				<b>Amortization:</b>
+				<br>
+				<table class="table-condensed">
+					<thead>
+						<th>No.</th>
+						<th>Due date</th>
+						<th>Principal</th>
+						<th>Interest</th>
+						<th>Total</th>
+						<th>Ideal Balance</th>
+					</thead>
+			        <tbody>
+			            {% for am in amortization %}
+			            <tr>
+			                <td>{{ loop.index }}</td>
+			                <td>{{ am.due_date | date }}</td>
+			                <td align="right">{{ am.principal | money }}</td>
+			                <td align="right">{{ am.interest | money }}</td>
+			                <td align="right" style="background-color : lightgray;">{{ (am.principal + am.interest) | money }}</td>
+			                <td align="right">{{ am.ideal_balance | money }}</td>
+			            </tr>
+			            {% endfor %}
+			        </tbody>
 				</table>
 			</small></small>
 			</div>

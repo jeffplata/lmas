@@ -59,9 +59,7 @@
                     <td></td>
                     <td style="padding-left: 20px;">
                         <div class="row">
-                            {# <a href="{{ url_for('main.dashboard') }}"> #}
                             <input type="submit" class="btn btn-primary" name="continue" value="Continue" formaction="{{ form.submit }}">
-                            {# </a> #}
                             <input type="submit" class="btn btn-default" name="recalc" value="Re-calculate" formaction="{{ form.submit }}">
                         </div>
                     </td>
@@ -71,22 +69,20 @@
         </tbody>
     </table>
 
-    {# {{ wtf.quick_form(form) }} #}
-
     <h4 class="h4-gray">Adjustments</h4>
     <table class="table-condensed">
         <tbody>
             <tr>
                 <td align="right">Balance:</td>
-                <td align="right">{{ balance|money }}</td>
+                <td align="right">{{ loan.previous_balance|money }}</td>
             </tr>
             <tr>
                 <td align="right">Processing Fee:</td>
-                <td align="right">{{ process_fee|money }}</td>
+                <td align="right">{{ loan.processing_fee|money }}</td>
             </tr>
             <tr>
                 <td align="right">Net Proceeds:</td>
-                <td align="right"><font size="+1">{{ net_proceeds|money }}</font></td>
+                <td align="right"><font size="+1">{{ loan.net_proceeds|money }}</font></td>
             </tr>
         </tbody>
     </table>

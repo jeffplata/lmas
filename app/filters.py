@@ -16,3 +16,10 @@ def money_filter(amount, total=''):
     if total:
         return total
     return "{:,.2f}".format(amount)
+
+@blueprint.app_template_filter('pluralize')
+def pluralize(number, singular = '', plural = 's'):
+    if number == 1:
+        return singular
+    else:
+        return plural

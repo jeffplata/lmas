@@ -9,10 +9,47 @@ from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 
 
+user = None
+service = None
+loan = None
+amortization = []
+
+
+def AmortizeLoan(loan):
+    amortization = []
+    prev_bal = loan.amount
+    due_date_1 = datetime.now() + relativedelta(months=1)
+    due_date = due_date_1
+
+    for i in range(1, loan.terms+1):
+        if i == (loan.terms):
+            principal_am = prev_bal
+        else:
+            principal_am = round(Decimal(loan.amount/loan.terms), 2)
+        interest_am = round(prev_bal*service.interest_rate*Decimal('0.01'),2)
+        am = AmortizationSchedule(
+            due_date=due_date,
+            previous_balance=prev_bal,
+            principal=principal_am,
+            interest=interest_am,
+            ideal_balance=prev_bal-principal_am
+            )
+        amortization.append(am)
+        prev_bal = am.ideal_balance
+        due_date = due_date_1 + relativedelta(months=i)
+
+    return amortization
+
+
 @bp.route('/apply-for-loan/<int:user_id>/<int:service_id>',
           methods=['GET', 'POST'])
 @login_required
 def apply_for_loan(user_id, service_id):
+    global user
+    global service
+    global loan
+    global amortization
+
     user = User.query.get(user_id)
     if not user.detail:
         return render_template('member/member_not_defined.html')
@@ -31,63 +68,45 @@ def apply_for_loan(user_id, service_id):
     process_fee = 250
     net_proceeds = form.amount.data - balance - process_fee
 
+    loan = Loan(amount=form.amount.data,
+                terms=form.terms.data,
+                previous_balance=balance,
+                processing_fee=process_fee,
+                net_proceeds=net_proceeds
+                )
+
     if form.validate_on_submit():
         if 'continue' in request.form:
-            # return render_template('member/apply_for_loan_checkout.html')
-            # return apply_for_loan_checkout(user, service)
             loan = Loan(amount=form.amount.data,
                         terms=form.terms.data,
                         previous_balance=balance,
                         processing_fee=process_fee,
                         net_proceeds=net_proceeds
                         )
-            return redirect(url_for('member.apply_for_loan_checkout',
-                                    user=user,
-                                    service=service,
-                                    loan=loan))
-            # TODO: //return render_template here
-            # return apply_for_loan_checkout(user, service, loan)
+            amortization = AmortizeLoan(loan)
 
+            return redirect(url_for('member.apply_for_loan_checkout'))
 
-    amortization = []
-    prev_bal = form.amount.data
-    due_date_1 = datetime.now() + relativedelta(months=1)
-    due_date = due_date_1
-    for i in range(1, form.terms.data+1):
-        if i == (form.terms.data):
-            principal_am = prev_bal
-        else:
-            principal_am = round(Decimal(form.amount.data/form.terms.data), 2)
-        interest_am = round(prev_bal*service.interest_rate*Decimal('0.01'),2)
-        am = AmortizationSchedule(
-            due_date=due_date,
-            previous_balance=prev_bal,
-            principal=principal_am,
-            interest=interest_am,
-            ideal_balance=prev_bal-principal_am
-            )
-        amortization.append(am)
-        prev_bal = am.ideal_balance
-        due_date = due_date_1 + relativedelta(months=i)
+    amortization = AmortizeLoan(loan)
 
     return render_template('member/apply_for_loan.html',
                            user=user,
                            service=service,
+                           loan=loan,
                            form=form,
-                           balance=balance,
-                           process_fee=process_fee,
-                           net_proceeds=net_proceeds,
                            amortization=amortization)
 
 
-@bp.route('/apply-for-loan-checkout/<user>/<service>/<loan>',
+@bp.route('/apply-for-loan-checkout/', 
           methods=['GET', 'POST'])
 @login_required
-def apply_for_loan_checkout(user, service, loan):
-    print("[[[[[[[[[[[[[[[")
-    view_args = request.view_args
-    print(user.id)
-    form = BankDetailsForm()
+def apply_for_loan_checkout():
+    global user
+    global service
+    global loan
+    global amortization
+
+    form = BankDetailsForm(account_number='',account_name=user.detail.full_name)
     form.bank_name.choices.append((1,'Land Bank of the Philippines'))
     form.bank_name.choices.append((2,'Philippine National Bank'))
 
@@ -98,6 +117,7 @@ def apply_for_loan_checkout(user, service, loan):
                            user=user,
                            service=service,
                            loan=loan,
+                           amortization=amortization,
                            form=form)
 
 
