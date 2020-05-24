@@ -1,5 +1,6 @@
 from app.member import bp
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for,\
+    session, flash
 from flask_user import login_required
 from app.user_models import User
 from app.member.models import Service, AmortizationSchedule, Loan
@@ -41,53 +42,64 @@ def AmortizeLoan(loan):
     return amortization
 
 
-@bp.route('/apply-for-loan/<int:user_id>/<int:service_id>',
-          methods=['GET', 'POST'])
+@bp.route('/apply-for-loan/<int:user_id>/<int:service_id>', 
+    methods=['GET', 'POST'])
+@bp.route('/apply-for-loan/<int:user_id>/<int:service_id>/<reload>', 
+    methods=['GET', 'POST'])
 @login_required
-def apply_for_loan(user_id, service_id):
+def apply_for_loan(user_id, service_id, reload='0'):
     global user
     global service
     global loan
     global amortization
+    global new_record
 
+    # if (not request.form):
+    # Load the user and service if coming from the Dashboard or Services
+    #   or from the Checkout to ensure eligibility
     user = User.query.get(user_id)
     if not user.detail:
         return render_template('member/member_not_defined.html')
     service = Service.query.get(service_id)
 
+    balance = 5500
+    process_fee = 250
+    default_loan_amount = 51000 # user.details.basic_salary * 0.8
+    default_loan_terms = service.max_term
+
     form = ApplyForLoanForm()
     form.terms.choices = [(x, str(x)) for x in 
         range(service.min_term,service.max_term+1)]
 
-    if not form.amount.data:
-        form.amount.data = 51000 # user.details.basic_salary * 0.8
-    if not form.terms.data:
-        form.terms.data = service.max_term
+    if request.form:
+        form.amount.data = Decimal(request.form['amount'])
+        form.terms.data = int(request.form['terms'])
+    else:
+        if (reload == '1') and loan:
+            form.amount.data = loan.amount
+            form.terms.data = loan.terms
+        else:
+            form.amount.data = default_loan_amount
+            form.terms.data = default_loan_terms
 
-    balance = 5500
-    process_fee = 250
-    net_proceeds = form.amount.data - balance - process_fee
+    loan_amount = form.amount.data
+    loan_terms = form.terms.data
 
-    loan = Loan(amount=form.amount.data,
-                terms=form.terms.data,
+    net_proceeds = loan_amount - balance - process_fee
+
+    loan = Loan(amount=loan_amount,
+                terms=loan_terms,
                 previous_balance=balance,
                 processing_fee=process_fee,
                 net_proceeds=net_proceeds
                 )
+    amortization = AmortizeLoan(loan)
 
     if form.validate_on_submit():
         if 'continue' in request.form:
-            loan = Loan(amount=form.amount.data,
-                        terms=form.terms.data,
-                        previous_balance=balance,
-                        processing_fee=process_fee,
-                        net_proceeds=net_proceeds
-                        )
-            amortization = AmortizeLoan(loan)
+            session['back_url'] = request.url
 
             return redirect(url_for('member.apply_for_loan_checkout'))
-
-    amortization = AmortizeLoan(loan)
 
     return render_template('member/apply_for_loan.html',
                            user=user,
@@ -106,12 +118,29 @@ def apply_for_loan_checkout():
     global loan
     global amortization
 
+    if not loan:
+        flash("""You have been redirected because the page you are trying 
+            to access is no longer valid.""", 'info')
+        return redirect(url_for('main.dashboard'))
+
     form = BankDetailsForm(account_number='',account_name=user.detail.full_name)
     form.bank_name.choices.append((1,'Land Bank of the Philippines'))
     form.bank_name.choices.append((2,'Philippine National Bank'))
 
-    if form.validate_on_submit():
-        return render_template('member/apply_for_loan_success.html')
+    if request.method == 'POST':
+
+        if 'back' in request.form:
+            return redirect(url_for('member.apply_for_loan', 
+                user_id=user.id,
+                service_id=service.id,
+                reload='1'))
+
+        if form.validate_on_submit():
+            user = None
+            service = None
+            loan = None
+            amortization = []
+            return render_template('member/apply_for_loan_success.html')
 
     return render_template('member/apply_for_loan_checkout.html',
                            user=user,

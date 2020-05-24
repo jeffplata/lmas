@@ -42,14 +42,17 @@
 				</tr>
 				<tr>
 					<td align="right">Save&nbsp;Account:</td>
-					<td>{{ form.save_account }}</td>
-					{# <td><input type="checkbox" class="form-control checkbox" id="save_account" name="save_account" value="{{ form.save_account.data }}"></td> #}
+					<td><input type="checkbox" style="width:20px; height:20px;" {% if form.save_account.data %}checked{% endif %} id="save_account" name="save_account" value="{{ form.save_account.data }}">
+					</td>
 				</tr>
 				<tr>
 					<td></td>
-					<td>
-						<input type="submit" class="btn btn-primary" name="submit" value="Submit" formaction="{{ form.submit }}">
-					</td>
+                    <td style="padding-left: 20px;">
+                        <div class="row">
+                            <input type="submit" class="btn btn-primary" name="submit" value="Submit" formaction="{{ form.submit }}">
+                            <input type="submit" formnovalidate class="btn btn-default" name="back" value="Back" formaction="{{ form.submit }}">
+                        </div>
+                    </td>
 				</tr>
 			</form>
 
@@ -122,9 +125,6 @@
 
 	</div>
 	</div>
-
-
-	
 
 </div>
 
