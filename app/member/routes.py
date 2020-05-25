@@ -1,9 +1,11 @@
 from app.member import bp
-from flask import render_template, request, redirect, url_for,\
-    session, flash
+
+from flask import flash, redirect, render_template, request, session,\
+    url_for
 from flask_user import login_required
 from app.user_models import User
-from app.member.models import Service, AmortizationSchedule, Loan
+from app.member.models import Service, AmortizationSchedule, Loan, Bank,\
+    MemberBank
 from .forms import ApplyForLoanForm, BankDetailsForm
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -16,25 +18,25 @@ loan = None
 amortization = []
 
 
-def AmortizeLoan(loan):
+def amortize_loan(loan):
     amortization = []
     prev_bal = loan.amount
     due_date_1 = datetime.now() + relativedelta(months=1)
     due_date = due_date_1
 
-    for i in range(1, loan.terms+1):
+    for i in range(1, loan.terms + 1):
         if i == (loan.terms):
             principal_am = prev_bal
         else:
-            principal_am = round(Decimal(loan.amount/loan.terms), 2)
-        interest_am = round(prev_bal*service.interest_rate*Decimal('0.01'),2)
+            principal_am = round(Decimal(loan.amount / loan.terms), 2)
+        interest_am = round(prev_bal * service.interest_rate * Decimal('0.01'),
+                            2)
         am = AmortizationSchedule(
             due_date=due_date,
             previous_balance=prev_bal,
             principal=principal_am,
             interest=interest_am,
-            ideal_balance=prev_bal-principal_am
-            )
+            ideal_balance=prev_bal - principal_am)
         amortization.append(am)
         prev_bal = am.ideal_balance
         due_date = due_date_1 + relativedelta(months=i)
@@ -42,19 +44,17 @@ def AmortizeLoan(loan):
     return amortization
 
 
-@bp.route('/apply-for-loan/<int:user_id>/<int:service_id>', 
-    methods=['GET', 'POST'])
-@bp.route('/apply-for-loan/<int:user_id>/<int:service_id>/<reload>', 
-    methods=['GET', 'POST'])
+@bp.route('/apply-for-loan/<int:user_id>/<int:service_id>',
+          methods=['GET', 'POST'])
+@bp.route('/apply-for-loan/<int:user_id>/<int:service_id>/<reload>',
+          methods=['GET', 'POST'])
 @login_required
 def apply_for_loan(user_id, service_id, reload='0'):
     global user
     global service
     global loan
     global amortization
-    global new_record
 
-    # if (not request.form):
     # Load the user and service if coming from the Dashboard or Services
     #   or from the Checkout to ensure eligibility
     user = User.query.get(user_id)
@@ -64,12 +64,12 @@ def apply_for_loan(user_id, service_id, reload='0'):
 
     balance = 5500
     process_fee = 250
-    default_loan_amount = 51000 # user.details.basic_salary * 0.8
+    default_loan_amount = 51000  # user.details.basic_salary * 0.8
     default_loan_terms = service.max_term
 
     form = ApplyForLoanForm()
-    form.terms.choices = [(x, str(x)) for x in 
-        range(service.min_term,service.max_term+1)]
+    form.terms.choices = [(x, str(x)) for x in
+                          range(service.min_term, service.max_term + 1)]
 
     if request.form:
         form.amount.data = Decimal(request.form['amount'])
@@ -93,7 +93,7 @@ def apply_for_loan(user_id, service_id, reload='0'):
                 processing_fee=process_fee,
                 net_proceeds=net_proceeds
                 )
-    amortization = AmortizeLoan(loan)
+    amortization = amortize_loan(loan)
 
     if form.validate_on_submit():
         if 'continue' in request.form:
@@ -109,7 +109,7 @@ def apply_for_loan(user_id, service_id, reload='0'):
                            amortization=amortization)
 
 
-@bp.route('/apply-for-loan-checkout/', 
+@bp.route('/apply-for-loan-checkout/',
           methods=['GET', 'POST'])
 @login_required
 def apply_for_loan_checkout():
@@ -119,21 +119,33 @@ def apply_for_loan_checkout():
     global amortization
 
     if not loan:
-        flash("""You have been redirected because the page you are trying 
+        flash("""You have been redirected because the page you are trying
             to access is no longer valid.""", 'info')
         return redirect(url_for('main.dashboard'))
 
-    form = BankDetailsForm(account_number='',account_name=user.detail.full_name)
-    form.bank_name.choices.append((1,'Land Bank of the Philippines'))
-    form.bank_name.choices.append((2,'Philippine National Bank'))
+    banks = Bank.all_active()
+    # get the first saved bank, get all when UI is fully deved
+    member_banks = MemberBank.query.filter_by(user_id=user.id).first()
+
+    form = BankDetailsForm()
+        # account_number='',
+        # account_name=user.detail.full_name)
+    form.bank_name.choices = [(bank.id, bank.name) for bank in banks]
+    if member_banks:
+        form.account_number.data = member_banks.account_number
+        form.account_name.data = member_banks.account_name
+        form.bank_name.data = member_banks.bank.name
+    else:
+        form.account_number.data = member_banks.account_number
+        form.account_name.data = member_banks.account_name        
 
     if request.method == 'POST':
 
         if 'back' in request.form:
-            return redirect(url_for('member.apply_for_loan', 
-                user_id=user.id,
-                service_id=service.id,
-                reload='1'))
+            return redirect(url_for('member.apply_for_loan',
+                            user_id=user.id,
+                            service_id=service.id,
+                            reload='1'))
 
         if form.validate_on_submit():
             user = None

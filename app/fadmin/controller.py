@@ -8,7 +8,7 @@ from flask import current_app, url_for
 
 from app import db
 from app.user_models import User, Role, UserDetail
-from app.member.models import Service
+from app.member.models import Service, Bank, MemberBank
 from wtforms.fields.simple import TextAreaField
 
 
@@ -16,6 +16,7 @@ class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
         return (not current_user.is_anonymous) and \
             current_user.has_roles('admin')
+
 
 app_name = current_app.config['USER_APP_NAME']
 
@@ -57,10 +58,16 @@ admin.add_view(MyModelView(Role, db.session, category='User'))
 # app-specific views
 
 
+class AppLibModelView(MyModelView):
+    form_excluded_columns = ['date_created', 'date_modified']
+
+
 class ServiceModelView(MyModelView):
 
     form_overrides = {'description': TextAreaField}
 
 
-admin.add_view(MyModelView(UserDetail, db.session, category='User'))
-admin.add_view(ServiceModelView(Service, db.session))
+admin.add_view(AppLibModelView(UserDetail, db.session, category='User'))
+admin.add_view(ServiceModelView(Service, db.session, category='Library'))
+admin.add_view(AppLibModelView(Bank, db.session, category='Library'))
+admin.add_view(AppLibModelView(MemberBank, db.session, category='Library'))

@@ -8,11 +8,14 @@
 
 {% block main_content %}
 
-<div class="col-sm-7 col-md-6 col-lg-5 ">
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-7 ">
   <h3>{{ title }}</h3>
   <br>
 
-  Your loan application has been successfully submitted.
+  Your loan application has been submitted successfully for processing.
+  <br>
+  You will receive an email shortly to confirm this action.
+  <br>
   <br>
   <a href="{{ url_for('main.dashboard') }}">
     <input type="button" class="btn btn-primary" name=ok value="Ok">
