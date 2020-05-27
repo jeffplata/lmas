@@ -13,22 +13,28 @@ class Service(Base):
     active = db.Column(db.Boolean(), default=True)
 
 
-class Loan(db.Model):
-    __abstract__ = True
-    # service_id = db.Column(db.Integer(),
-    #                        db.ForeignKey(
-    #                        'service.id', ondelete='CASCADE'))
-    # user_id = db.Column(db.Integer(),
-    #                     db.ForeignKey(
-    #                     'auth_user.id', ondelete='CASCADE'))
+class Loan(Base):
+    # __abstract__ = True
+    __tablename__ = 'loan'
+    service_id = db.Column(db.Integer(),
+                           db.ForeignKey(
+                           'service.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer(),
+                        db.ForeignKey(
+                        'auth_user.id', ondelete='CASCADE'))
     amount = db.Column(db.Numeric(15, 2), nullable=False)
     terms = db.Column(db.Integer(), nullable=False)
+    interest_rate = db.Column(db.Numeric(15, 2))
     previous_balance = db.Column(db.Numeric(15, 2))
     processing_fee = db.Column(db.Numeric(15, 2))
     net_proceeds = db.Column(db.Numeric(15, 2), nullable=False)
+    first_due_date = db.Column(db.Date(), nullable=False)
+    last_due_date = db.Column(db.Date())
+    memberbank_id = db.Column(db.Integer())
 
     def __repr__(self):
         return '<Loan %r>' % (self.amount)
+        # return '<Loan {}, {}>'.format(self.user)
 
 
 class AmortizationSchedule(db.Model):

@@ -10,6 +10,7 @@ from .forms import ApplyForLoanForm, BankDetailsForm
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
+from app import db
 
 
 user = None
@@ -18,18 +19,18 @@ loan = None
 amortization = []
 
 
-def amortize_loan(loan):
+def amortize_loan(amount, terms, interest_rate):
     amortization = []
-    prev_bal = loan.amount
+    prev_bal = amount
     due_date_1 = datetime.now() + relativedelta(months=1)
     due_date = due_date_1
 
-    for i in range(1, loan.terms + 1):
-        if i == (loan.terms):
+    for i in range(1, terms + 1):
+        if i == (terms):
             principal_am = prev_bal
         else:
-            principal_am = round(Decimal(loan.amount / loan.terms), 2)
-        interest_am = round(prev_bal * service.interest_rate * Decimal('0.01'),
+            principal_am = round(Decimal(amount / terms), 2)
+        interest_am = round(prev_bal * interest_rate * Decimal('0.01'),
                             2)
         am = AmortizationSchedule(
             due_date=due_date,
@@ -87,13 +88,19 @@ def apply_for_loan(user_id, service_id, reload='0'):
 
     net_proceeds = loan_amount - balance - process_fee
 
-    loan = Loan(amount=loan_amount,
-                terms=loan_terms,
-                previous_balance=balance,
-                processing_fee=process_fee,
-                net_proceeds=net_proceeds
-                )
-    amortization = amortize_loan(loan)
+    amortization = amortize_loan(loan_amount, loan_terms, service.interest_rate)
+    loan = Loan(
+        user_id=user.id,
+        service_id=service.id,
+        amount=loan_amount,
+        terms=loan_terms,
+        interest_rate=service.interest_rate,
+        previous_balance=balance,
+        processing_fee=process_fee,
+        net_proceeds=net_proceeds,
+        first_due_date=amortization[0].due_date,
+        last_due_date=amortization[-1].due_date)
+    # amortization = amortize_loan(loan)
 
     if form.validate_on_submit():
         if 'continue' in request.form:
@@ -125,14 +132,14 @@ def apply_for_loan_checkout():
 
     banks = Bank.all_active()
     # get the first saved bank, get all when UI is fully deved
-    member_banks = MemberBank.query.filter_by(user_id=user.id).first()
+    member_banks = MemberBank.query.filter_by(user_id=user.id).all()
 
     form = BankDetailsForm()
     form.bank_name.choices = [(bank.id, bank.name) for bank in banks]
     if member_banks:
-        form.account_number = member_banks.account_number
-        form.account_name = member_banks.account_name
-        form.bank_name = member_banks.bank.name
+        form.account_number = member_banks[0].account_number
+        form.account_name = member_banks[0].account_name
+        form.bank_name = member_banks[0].bank.name
     else:
         form.account_number = ''
         form.account_name = user.detail.full_name
@@ -146,6 +153,21 @@ def apply_for_loan_checkout():
                             reload='1'))
 
         if form.validate_on_submit():
+            # ln = Loan(
+            #     user_id=user.id,
+            #     service_id=service.id,
+            #     amount=loan.amount,
+            #     terms=loan.terms,
+            #     interest_rate=service.interest_rate,
+            #     previous_balance=loan.previous_balance,
+            #     processing_fee=loan.processing_fee,
+            #     net_proceeds=loan.net_proceeds,
+            #     first_due_date=amortization[0].due_date,
+            #     last_due_date=amortization[-1].due_date)
+
+            # save loan, save bank
+            db.session.save()
+
             user = None
             service = None
             loan = None
