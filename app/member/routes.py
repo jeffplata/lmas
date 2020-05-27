@@ -128,16 +128,14 @@ def apply_for_loan_checkout():
     member_banks = MemberBank.query.filter_by(user_id=user.id).first()
 
     form = BankDetailsForm()
-        # account_number='',
-        # account_name=user.detail.full_name)
     form.bank_name.choices = [(bank.id, bank.name) for bank in banks]
     if member_banks:
-        form.account_number.data = member_banks.account_number
-        form.account_name.data = member_banks.account_name
-        form.bank_name.data = member_banks.bank.name
+        form.account_number = member_banks.account_number
+        form.account_name = member_banks.account_name
+        form.bank_name = member_banks.bank.name
     else:
-        form.account_number.data = member_banks.account_number
-        form.account_name.data = member_banks.account_name        
+        form.account_number = ''
+        form.account_name = user.detail.full_name
 
     if request.method == 'POST':
 
