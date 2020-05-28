@@ -31,6 +31,8 @@ class Loan(Base):
     first_due_date = db.Column(db.Date(), nullable=False)
     last_due_date = db.Column(db.Date())
     memberbank_id = db.Column(db.Integer())
+    # the bank reference is only for convenience
+    #    user can remove his bank detail anytime
 
     def __repr__(self):
         return '<Loan %r>' % (self.amount)
