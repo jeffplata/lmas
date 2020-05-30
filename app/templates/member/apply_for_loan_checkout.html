@@ -19,8 +19,9 @@
   	<div class="col-sm-6 col-md-6 col-lg-6">
 	<table class="table-condensed">
 		<tbody>
-			
-			<form action="{{ url_for('member.apply_for_loan_checkout', user=user, service=service, loan=loan) }}" method="POST">
+			{# 
+			<form action="{{ url_for('member.apply_for_loan_checkout', user=user, service=service, loan=loan) }}" method="POST"> #}
+			<form action="" method="POST">
 				{{ form.csrf_token() }}
 				<tr>
 					<td align="right">Bank Name:</td>
@@ -34,11 +35,13 @@
 				</tr>
 				<tr>
 					<td align="right">Account&nbsp;Number:</td>
-					<td><input type="text" class="form-control" id="account_number" name="account_number" required value="{{ form.account_number.data }}"></td>
+					<td><input type="text" class="form-control" id="account_number" name="account_number" required value="{{ form.account_number.data }}">
+					</td>
 				</tr>
 				<tr>
 					<td align="right">Account&nbsp;Name:</td>
-					<td><input type="text" class="form-control" id="account_name" name="account_name" required value="{{ form.account_name.data }}"></td>
+					<td><input type="text" class="form-control" id="account_name" name="account_name" required value="{{ form.account_name.data }}">
+					</td>
 				</tr>
 				<tr>
 					<td align="right">Save&nbsp;Account:</td>

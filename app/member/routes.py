@@ -88,7 +88,9 @@ def apply_for_loan(user_id, service_id, reload='0'):
 
     net_proceeds = loan_amount - balance - process_fee
 
-    amortization = amortize_loan(loan_amount, loan_terms, service.interest_rate)
+    amortization = amortize_loan(loan_amount,
+                                 loan_terms,
+                                 service.interest_rate)
     loan = Loan(
         user_id=user.id,
         service_id=service.id,
@@ -104,7 +106,7 @@ def apply_for_loan(user_id, service_id, reload='0'):
 
     if form.validate_on_submit():
         if 'continue' in request.form:
-            session['back_url'] = request.url
+            # session['back_url'] = request.url
 
             return redirect(url_for('member.apply_for_loan_checkout'))
 
@@ -136,15 +138,18 @@ def apply_for_loan_checkout():
 
     form = BankDetailsForm()
     form.bank_name.choices = [(bank.id, bank.name) for bank in banks]
-    if member_banks:
-        form.account_number = member_banks[0].account_number
-        form.account_name = member_banks[0].account_name
-        form.bank_name = member_banks[0].bank.name
-    else:
-        form.account_number = ''
-        form.account_name = user.detail.full_name
+
+    if not request.form:
+        if member_banks:
+            form.account_number.data = member_banks[0].account_number
+            form.account_name.data = member_banks[0].account_name
+            form.bank_name.data = member_banks[0].bank.name
+        else:
+            form.account_number.data = ''
+            form.account_name.data = user.detail.full_name
 
     if request.method == 'POST':
+        print('1** request method is POST')
 
         if 'back' in request.form:
             return redirect(url_for('member.apply_for_loan',
@@ -153,27 +158,33 @@ def apply_for_loan_checkout():
                             reload='1'))
 
         if form.validate_on_submit():
-            # ln = Loan(
-            #     user_id=user.id,
-            #     service_id=service.id,
-            #     amount=loan.amount,
-            #     terms=loan.terms,
-            #     interest_rate=service.interest_rate,
-            #     previous_balance=loan.previous_balance,
-            #     processing_fee=loan.processing_fee,
-            #     net_proceeds=loan.net_proceeds,
-            #     first_due_date=amortization[0].due_date,
-            #     last_due_date=amortization[-1].due_date)
+            print('2** form is validated')
 
             # save loan, save bank
-            db.session.save()
+            mb = MemberBank(
+                user_id=user.id,
+                bank_id=form.bank_name.data,
+                account_number=form.account_number.data,
+                account_name=form.account_name.data)
 
-            user = None
-            service = None
-            loan = None
-            amortization = []
-            return render_template('member/apply_for_loan_success.html')
+            db.session.add(mb)
+            db.session.flush()
+            loan.memberbank_id = mb.id
+            db.session.add(loan)
+            try:
+                print('3** try')
+                db.session.commit()
+                user = None
+                service = None
+                loan = None
+                amortization = []
+                return render_template('member/apply_for_loan_success.html')
+            except Exception:
+                raise
+                flash('Error occured.', 'error')
+                db.session.rollback()
 
+    print('5** render template again')
     return render_template('member/apply_for_loan_checkout.html',
                            user=user,
                            service=service,

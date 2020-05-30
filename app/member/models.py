@@ -88,3 +88,10 @@ class MemberBank(Base):
             # it may have found itself
             return (match_found.id != self.id)
         return True
+
+    def __repr__(self):
+        return "MB {},{},{},{}".format(
+            self.user_id,
+            self.bank_id,
+            self.account_number,
+            self.account_name)

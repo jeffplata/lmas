@@ -238,6 +238,51 @@ ALTER SEQUENCE public.bank_id_seq OWNED BY public.bank.id;
 
 
 --
+-- Name: loan; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.loan (
+    id integer NOT NULL,
+    date_created timestamp without time zone,
+    date_modified timestamp without time zone,
+    service_id integer,
+    user_id integer,
+    amount numeric(15,2) NOT NULL,
+    terms integer NOT NULL,
+    previous_balance numeric(15,2),
+    processing_fee numeric(15,2),
+    net_proceeds numeric(15,2) NOT NULL,
+    first_due_date date NOT NULL,
+    last_due_date date,
+    interest_rate numeric(15,2)
+);
+
+
+ALTER TABLE public.loan OWNER TO postgres;
+
+--
+-- Name: loan_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.loan_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.loan_id_seq OWNER TO postgres;
+
+--
+-- Name: loan_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.loan_id_seq OWNED BY public.loan.id;
+
+
+--
 -- Name: member_bank; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -353,6 +398,13 @@ ALTER TABLE ONLY public.bank ALTER COLUMN id SET DEFAULT nextval('public.bank_id
 
 
 --
+-- Name: loan id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan ALTER COLUMN id SET DEFAULT nextval('public.loan_id_seq'::regclass);
+
+
+--
 -- Name: member_bank id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -371,7 +423,7 @@ ALTER TABLE ONLY public.service ALTER COLUMN id SET DEFAULT nextval('public.serv
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-c0a20065468e
+36692f925e36
 \.
 
 
@@ -438,6 +490,14 @@ COPY public.bank (id, date_created, date_modified, short_name, name, active) FRO
 
 
 --
+-- Data for Name: loan; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.loan (id, date_created, date_modified, service_id, user_id, amount, terms, previous_balance, processing_fee, net_proceeds, first_due_date, last_due_date, interest_rate) FROM stdin;
+\.
+
+
+--
 -- Data for Name: member_bank; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -491,10 +551,17 @@ SELECT pg_catalog.setval('public.bank_id_seq', 2, true);
 
 
 --
+-- Name: loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.loan_id_seq', 1, false);
+
+
+--
 -- Name: member_bank_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.member_bank_id_seq', 1, false);
+SELECT pg_catalog.setval('public.member_bank_id_seq', 6, true);
 
 
 --
@@ -585,6 +652,14 @@ ALTER TABLE ONLY public.bank
 
 
 --
+-- Name: loan loan_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan
+    ADD CONSTRAINT loan_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: member_bank member_bank_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -630,6 +705,22 @@ ALTER TABLE ONLY public.auth_user_roles
 
 ALTER TABLE ONLY public.auth_user_roles
     ADD CONSTRAINT auth_user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.auth_user(id) ON DELETE CASCADE;
+
+
+--
+-- Name: loan loan_service_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan
+    ADD CONSTRAINT loan_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.service(id) ON DELETE CASCADE;
+
+
+--
+-- Name: loan loan_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan
+    ADD CONSTRAINT loan_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.auth_user(id) ON DELETE CASCADE;
 
 
 --
