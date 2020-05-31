@@ -4,7 +4,8 @@ from flask import render_template, flash, session, redirect
 from flask_user import login_required
 from .forms import UserProfileForm, UserNameForm, MemberAccountForm
 from app.user_models import UserDetail
-from app.member.models import Service
+from app.member.models import Service, MemberBank
+from flask_table import Table, Col
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -29,16 +30,29 @@ def dashboard():
     return render_template('main/dashboard.html', form=form, services=services)
 
 
+class BankAccountTable(Table):
+    classes = ['table', 'table-condensed', 'table-striped']
+    # TODO: continue here
+    account_number = Col('account_number')
+    account_name = Col('account_name')
+
 @bp.route('/user-profile/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def user_profile(user_id):
     user_detail = UserDetail.query.filter_by(user_id=user_id).first()
+    bank_accounts = MemberBank.query.filter_by(user_id=user_id).all()
+    table = BankAccountTable(bank_accounts)
     form = UserProfileForm(obj=user_detail)
     form.position.data = 'Executive Assistant III'
     form.salary.data = 51000
     form.office.data = "OAAFA"
     form.beneficiaries.data = "Almira\nAda\nAdrian\nChanchan :)"
-    return render_template('user_profile.html', form=form, user_id=user_id)
+    return render_template(
+        'user_profile.html',
+        form=form,
+        user_id=user_id,
+        bank_accounts=bank_accounts,
+        table=table)
 
 
 @bp.route('/edit-user-name/<int:user_id>', methods=['GET', 'POST'])

@@ -11,6 +11,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_user import UserManager
 from flask_mail import Mail
+from flask_babel import Babel
+
 
 bootstrap = Bootstrap()
 fa = FontAwesome()
@@ -20,6 +22,7 @@ from app.user_models import User
 
 migrate = Migrate()
 mail = Mail()
+babel = Babel()
 
 
 def create_app(config_class=Config):
@@ -33,6 +36,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     UserManager(app, db, User)
     mail.init_app(app)
+    babel.init_app(app)
 
     # register blueprints
     with app.app_context():

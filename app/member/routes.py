@@ -6,7 +6,7 @@ from flask_user import login_required
 from app.user_models import User
 from app.member.models import Service, AmortizationSchedule, Loan, Bank,\
     MemberBank
-from .forms import ApplyForLoanForm, BankDetailsForm
+from .forms import ApplyForLoanForm, MemberBankForm
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
@@ -133,14 +133,15 @@ def apply_for_loan_checkout():
         return redirect(url_for('main.dashboard'))
 
     banks = Bank.all_active()
-    # get the first saved bank, get all when UI is fully deved
-    member_banks = MemberBank.query.filter_by(user_id=user.id).all()
 
-    form = BankDetailsForm()
+    form = MemberBankForm()
     form.bank_name.choices = [(bank.id, bank.name) for bank in banks]
 
     if not request.form:
+        # get the first saved bank, get all when UI is fully deved
+        member_banks = MemberBank.query.filter_by(user_id=user.id).all()
         if member_banks:
+            form.member_bank_id.data = member_banks[0].id
             form.account_number.data = member_banks[0].account_number
             form.account_name.data = member_banks[0].account_name
             form.bank_name.data = member_banks[0].bank.name
@@ -149,7 +150,6 @@ def apply_for_loan_checkout():
             form.account_name.data = user.detail.full_name
 
     if request.method == 'POST':
-        print('1** request method is POST')
 
         if 'back' in request.form:
             return redirect(url_for('member.apply_for_loan',
@@ -158,21 +158,22 @@ def apply_for_loan_checkout():
                             reload='1'))
 
         if form.validate_on_submit():
-            print('2** form is validated')
 
-            # save loan, save bank
+            mb_id = form.member_bank_id.data
             mb = MemberBank(
+                id=mb_id,
                 user_id=user.id,
                 bank_id=form.bank_name.data,
                 account_number=form.account_number.data,
                 account_name=form.account_name.data)
 
-            db.session.add(mb)
+            if mb.is_unique_record():
+                mb.id = None
+                db.session.add(mb)
             db.session.flush()
             loan.memberbank_id = mb.id
             db.session.add(loan)
             try:
-                print('3** try')
                 db.session.commit()
                 user = None
                 service = None
@@ -181,15 +182,15 @@ def apply_for_loan_checkout():
                 return render_template('member/apply_for_loan_success.html')
             except Exception:
                 raise
-                flash('Error occured.', 'error')
+                flash('Error occurred.', 'error')
                 db.session.rollback()
 
-    print('5** render template again')
     return render_template('member/apply_for_loan_checkout.html',
                            user=user,
                            service=service,
                            loan=loan,
                            amortization=amortization,
+                           member_banks=member_banks,
                            form=form)
 
 

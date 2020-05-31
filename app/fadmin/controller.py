@@ -63,11 +63,14 @@ class AppLibModelView(MyModelView):
 
 
 class ServiceModelView(MyModelView):
-
     form_overrides = {'description': TextAreaField}
+
+
+class MemberBankView(AppLibModelView):
+    column_filters = [User.email, Bank.short_name]
 
 
 admin.add_view(AppLibModelView(UserDetail, db.session, category='User'))
 admin.add_view(ServiceModelView(Service, db.session, category='Library'))
 admin.add_view(AppLibModelView(Bank, db.session, category='Library'))
-admin.add_view(AppLibModelView(MemberBank, db.session, category='Library'))
+admin.add_view(MemberBankView(MemberBank, db.session, category='Library'))

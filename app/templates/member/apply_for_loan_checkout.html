@@ -7,128 +7,165 @@
 {{ title }}
 {% endblock %}
 
+{% block head %}
+	{{ super() }}
+	<style>
+		input.left-indent {
+			margin-left: 40px;
+		}
+		label.plain {
+			font-weight: normal;
+		}
+	</style>
+{% endblock %}
+
 {% block main_content %}
 
 <div class="col-sm-12 ">
   <h3>{{ title }}</h3>
   <br>
-
-  <h4 class="h4-gray">Bank details</h4>
-
-  	<div class="row">
+  
+  <div class="row">
   	<div class="col-sm-6 col-md-6 col-lg-6">
-	<table class="table-condensed">
-		<tbody>
-			{# 
-			<form action="{{ url_for('member.apply_for_loan_checkout', user=user, service=service, loan=loan) }}" method="POST"> #}
-			<form action="" method="POST">
-				{{ form.csrf_token() }}
-				<tr>
-					<td align="right">Bank Name:</td>
-					<td><select class="form-control" id="bank_name" name="bank_name">
-						{% for i in form.bank_name.choices %}
-							<option value={{ i[0] }} {% if i[0] == form.bank_name.data%}selected{% endif %}>{{ i[1] }}
-							</option>
-						{% endfor %}
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td align="right">Account&nbsp;Number:</td>
-					<td><input type="text" class="form-control" id="account_number" name="account_number" required value="{{ form.account_number.data }}">
-					</td>
-				</tr>
-				<tr>
-					<td align="right">Account&nbsp;Name:</td>
-					<td><input type="text" class="form-control" id="account_name" name="account_name" required value="{{ form.account_name.data }}">
-					</td>
-				</tr>
-				<tr>
-					<td align="right">Save&nbsp;Account:</td>
-					<td><input type="checkbox" style="width:20px; height:20px;" {% if form.save_account.data %}checked{% endif %} id="save_account" name="save_account" value="{{ form.save_account.data }}">
-					</td>
-				</tr>
-				<tr>
-					<td></td>
-                    <td style="padding-left: 20px;">
-                        <div class="row">
-                            <input type="submit" class="btn btn-primary" name="submit" value="Submit" formaction="{{ form.submit }}">
-                            <input type="submit" formnovalidate class="btn btn-default" name="back" value="Back" formaction="{{ form.submit }}">
-                        </div>
-                    </td>
-				</tr>
-			</form>
 
-		</tbody>
-	</table>
-	</div>
+  	{% if member_banks %}
+    <h4 class="h4-gray">Previous bank accounts</h4>
+    <small>
+	    {% for mb in member_banks %}
+	    	<input class="left-indent" type="radio" id="mb{{ mb.id }}" name="member_bank" value="{{mb.account_number}}" 
+	    		onclick="UpdateInput('{{mb.bank.id}}','{{mb.account_number}}','{{mb.account_name}}');">
+	    	<label class="plain" for="mb{{ mb.id }}">{{ mb.account_number }}, {{ mb.bank.short_name }}, {{ mb.account_name|truncate(15, True) }}</label>
+	    	<br>
+	    {% endfor %}
+    </small>
+    {% endif %}
 
-	<div class="col-sm-6 col-md-6 col-lg-6">
-		<div class="panel panel-default">
-			<div class="panel-body">
-			<small><small>
-				<b>Loan Details:</b>
-				<br>
-				<table class="table-condensed">
+    <h4 class="h4-gray">Bank details for this loan</h4>
+
+		<table class="table-condensed">
+			<tbody>
+				<form action="" method="POST">
+					{{ form.csrf_token() }}
+					{{ form.member_bank_id }}
 					<tr>
-						<td width="100px;">
-							For:<br>
-							Loan Type:<br>
-							Amount:<br>
-							Terms:
-						</td>
-						<td>{{ user.detail.full_name }}<br>
-							{{ service.name }}<br>
-							{{ loan.amount|money }}<br>
-							{{ loan.terms }} month{{loan.terms|pluralize }}
+						<td align="right">Bank Name:</td>
+						<td><select class="form-control" id="bank_name" name="bank_name">
+							{% for i in form.bank_name.choices %}
+								<option value={{ i[0] }} {% if i[0] == form.bank_name.data%}selected{% endif %}>{{ i[1] }}
+								</option>
+							{% endfor %}
+							</select>
 						</td>
 					</tr>
-				</table>
-				<b>Adjustments:</b>
-				<br>
-				<table class="table-condensed">
 					<tr>
-						<td width="100px;">Previous Balance:<br>
-							Processing Fee:<br>
-							Net Proceeds:
-						</td>
-						<td align="right">{{ loan.previous_balance|money }}<br>
-							{{ loan.processing_fee|money }}<br>
-							{{ loan.net_proceeds|money }}
+						<td align="right">Account&nbsp;Number:</td>
+						<td><input type="text" class="form-control" id="account_number" name="account_number" required value="{{ form.account_number.data }}">
 						</td>
 					</tr>
-				</table>
-				<b>Amortization:</b>
-				<br>
-				<table class="table-condensed">
-					<thead>
-						<th>No.</th>
-						<th>Due date</th>
-						<th>Principal</th>
-						<th>Interest</th>
-						<th>Total</th>
-						<th>Ideal Balance</th>
-					</thead>
-			        <tbody>
-			            {% for am in amortization %}
-			            <tr>
-			                <td>{{ loop.index }}</td>
-			                <td>{{ am.due_date | date }}</td>
-			                <td align="right">{{ am.principal | money }}</td>
-			                <td align="right">{{ am.interest | money }}</td>
-			                <td align="right" style="background-color : lightgray;">{{ (am.principal + am.interest) | money }}</td>
-			                <td align="right">{{ am.ideal_balance | money }}</td>
-			            </tr>
-			            {% endfor %}
-			        </tbody>
-				</table>
-			</small></small>
-			</div>
+					<tr>
+						<td align="right">Account&nbsp;Name:</td>
+						<td><input type="text" class="form-control" id="account_name" name="account_name" required value="{{ form.account_name.data }}">
+						</td>
+					</tr>{# 
+					<tr>
+						<td align="right">Save&nbsp;Account:</td>
+						<td><input type="checkbox" style="width:20px; height:20px;" {% if form.save_account.data %}checked{% endif %} id="save_account" name="save_account" value="{{ form.save_account.data }}">
+						</td>
+					</tr> #}
+					<tr>
+						<td></td>
+            <td style="padding-left: 20px;">
+              <div class="row">
+                <input type="submit" class="btn btn-primary" name="submit" value="Submit" formaction="{{ form.submit }}">
+                <input type="submit" formnovalidate class="btn btn-default" name="back" value="Back" formaction="{{ form.submit }}">
+              </div>
+            </td>
+					</tr>
+				</form>
+			</tbody>
+		</table>
+		<br>
 		</div>
 
-	</div>
-	</div>
+		<div class="col-sm-6 col-md-6 col-lg-6">
+			<div class="panel panel-default">
+				<div class="panel-body">
+				<small><small>
+					<b>Loan Details:</b>
+					<br>
+					<table class="table-condensed">
+						<tr>
+							<td width="100px;">
+								For:<br>
+								Loan Type:<br>
+								Amount:<br>
+								Terms:
+							</td>
+							<td>{{ user.detail.full_name }}<br>
+								{{ service.name }}<br>
+								{{ loan.amount|money }}<br>
+								{{ loan.terms }} month{{loan.terms|pluralize }}
+							</td>
+						</tr>
+					</table>
+					<b>Adjustments:</b>
+					<br>
+					<table class="table-condensed">
+						<tr>
+							<td width="100px;">Previous Balance:<br>
+								Processing Fee:<br>
+								Net Proceeds:
+							</td>
+							<td align="right">{{ loan.previous_balance|money }}<br>
+								{{ loan.processing_fee|money }}<br>
+								{{ loan.net_proceeds|money }}
+							</td>
+						</tr>
+					</table>
+					<b>Amortization:</b>
+					<br>
+					<table class="table-condensed">
+						<thead>
+							<th>No.</th>
+							<th>Due date</th>
+							<th>Principal</th>
+							<th>Interest</th>
+							<th>Total</th>
+							<th>Ideal Balance</th>
+						</thead>
+				        <tbody>
+				            {% for am in amortization %}
+				            <tr>
+				                <td>{{ loop.index }}</td>
+				                <td>{{ am.due_date | date }}</td>
+				                <td align="right">{{ am.principal | money }}</td>
+				                <td align="right">{{ am.interest | money }}</td>
+				                <td align="right" style="background-color : lightgray;">{{ (am.principal + am.interest) | money }}</td>
+				                <td align="right">{{ am.ideal_balance | money }}</td>
+				            </tr>
+				            {% endfor %}
+				        </tbody>
+					</table>
+				</small></small>
+				</div>
+			</div>
+
+		</div>
+  </div>
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+	function UpdateInput(bank_name, acct_no, acct_name)
+	{
+		console.log(bank_name);
+		document.getElementById('bank_name').value = bank_name;
+	  document.getElementById('account_number').value = acct_no;
+	  document.getElementById('account_name').value = acct_name;
+	}
+  </script>
 {% endblock %}

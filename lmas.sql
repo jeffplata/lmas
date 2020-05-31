@@ -254,7 +254,8 @@ CREATE TABLE public.loan (
     net_proceeds numeric(15,2) NOT NULL,
     first_due_date date NOT NULL,
     last_due_date date,
-    interest_rate numeric(15,2)
+    interest_rate numeric(15,2),
+    memberbank_id integer
 );
 
 
@@ -423,7 +424,7 @@ ALTER TABLE ONLY public.service ALTER COLUMN id SET DEFAULT nextval('public.serv
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-36692f925e36
+fb07334e3d05
 \.
 
 
@@ -467,6 +468,7 @@ COPY public.auth_user (id, date_created, date_modified, username, email, passwor
 COPY public.auth_user_detail (id, date_created, date_modified, user_id, last_name, first_name, middle_name, suffix) FROM stdin;
 1	\N	\N	4	Plata	Jeff	M	the Great
 2	2020-05-04 01:01:16	2020-05-04 15:51:03.867823	5	Agana	Ian	O	Jr
+3	2020-05-31 19:50:14.637292	2020-05-31 19:50:14.637292	7	Test Lastname	Test Firstname	Test Middle	\N
 \.
 
 
@@ -493,7 +495,18 @@ COPY public.bank (id, date_created, date_modified, short_name, name, active) FRO
 -- Data for Name: loan; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.loan (id, date_created, date_modified, service_id, user_id, amount, terms, previous_balance, processing_fee, net_proceeds, first_due_date, last_due_date, interest_rate) FROM stdin;
+COPY public.loan (id, date_created, date_modified, service_id, user_id, amount, terms, previous_balance, processing_fee, net_proceeds, first_due_date, last_due_date, interest_rate, memberbank_id) FROM stdin;
+1	2020-05-31 10:33:19.971434	2020-05-31 10:33:19.971434	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	8
+2	2020-05-31 12:02:12.646651	2020-05-31 12:02:12.646651	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	9
+3	2020-05-31 12:23:14.629017	2020-05-31 12:23:14.629017	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	10
+4	2020-05-31 12:41:09.265635	2020-05-31 12:41:09.265635	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	\N
+5	2020-05-31 13:44:05.03908	2020-05-31 13:44:05.03908	1	5	12000.00	24	5500.00	250.00	6250.00	2020-06-30	2022-05-30	1.00	13
+6	2020-05-31 14:28:21.090377	2020-05-31 14:28:21.090377	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	8
+7	2020-05-31 19:35:39.686816	2020-05-31 19:35:39.686816	2	5	51000.00	12	5500.00	250.00	45250.00	2020-06-30	2021-05-30	1.50	13
+8	2020-05-31 19:37:37.749687	2020-05-31 19:37:37.749687	2	5	51000.00	12	5500.00	250.00	45250.00	2020-06-30	2021-05-30	1.50	14
+9	2020-05-31 19:43:50.012939	2020-05-31 19:43:50.012939	1	5	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	13
+10	2020-05-31 22:35:10.915618	2020-05-31 22:35:10.915618	1	5	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	13
+11	2020-05-31 22:37:49.714409	2020-05-31 22:37:49.714409	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	15
 \.
 
 
@@ -502,6 +515,12 @@ COPY public.loan (id, date_created, date_modified, service_id, user_id, amount, 
 --
 
 COPY public.member_bank (id, date_created, date_modified, bank_id, user_id, account_number, account_name) FROM stdin;
+8	2020-05-31 10:33:19.971434	2020-05-31 10:33:19.971434	1	4	12345678	Jeff M Plata the Great
+9	2020-05-31 12:02:12.646651	2020-05-31 12:02:12.646651	1	4	1080100	Jeff M Plata the Great
+10	2020-05-31 12:23:14.629017	2020-05-31 12:23:14.629017	1	4	12345678	Jeff M Plata the Great
+13	2020-05-31 13:44:05.03908	2020-05-31 13:44:05.03908	1	5	1080190	Ian O Agana Jr
+14	2020-05-31 19:37:37.749687	2020-05-31 19:37:37.749687	2	5	1080190	Ian O Agana Jr
+15	2020-05-31 22:37:49.714409	2020-05-31 22:37:49.714409	2	4	12345678	Jeff M Plata the Great
 \.
 
 
@@ -526,7 +545,7 @@ SELECT pg_catalog.setval('public.auth_role_id_seq', 9, true);
 -- Name: auth_user_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: User
 --
 
-SELECT pg_catalog.setval('public.auth_user_detail_id_seq', 2, true);
+SELECT pg_catalog.setval('public.auth_user_detail_id_seq', 3, true);
 
 
 --
@@ -554,14 +573,14 @@ SELECT pg_catalog.setval('public.bank_id_seq', 2, true);
 -- Name: loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.loan_id_seq', 1, false);
+SELECT pg_catalog.setval('public.loan_id_seq', 11, true);
 
 
 --
 -- Name: member_bank_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.member_bank_id_seq', 6, true);
+SELECT pg_catalog.setval('public.member_bank_id_seq', 15, true);
 
 
 --

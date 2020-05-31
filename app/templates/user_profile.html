@@ -77,6 +77,14 @@ User Profile
 
             </form>
 
+            <br>
+            <h4 class="h4-gray">Bank Accounts</h4>
+            <p>No accounts defined.
+            <br>
+            <a href="#">Edit accounts</a>
+            <br>
+            {{ table }}
+
             {# {{ user_detail.full_name }}<a href="{{ url_for('main.edit_user_name', user_id=user_detail.user_id) }}">&nbspEdit</a> #}
             {% if not user_manager.USER_ENABLE_AUTH0 %}
                 {% if user_manager.USER_ENABLE_CHANGE_USERNAME %}

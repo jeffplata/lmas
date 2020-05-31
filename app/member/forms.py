@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import DecimalField, SelectField, SubmitField,\
-    StringField, BooleanField
+    StringField, BooleanField, HiddenField
 from wtforms.validators import DataRequired
 
 
@@ -21,3 +21,14 @@ class BankDetailsForm(FlaskForm):
     account_name = StringField(validators=[DataRequired()])
     save_account = BooleanField(default=True)
     # submit = SubmitField()
+
+
+class MemberBankForm(FlaskForm):
+    """Form for Member Bank when applying for loan."""
+
+    member_bank_id = HiddenField()
+    bank_name = SelectField(validators=[DataRequired()], choices=[],
+                            coerce=int)
+    account_number = StringField(validators=[DataRequired()])
+    account_name = StringField(validators=[DataRequired()])
+    save_account = BooleanField(default=True)

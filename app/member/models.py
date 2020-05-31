@@ -78,7 +78,7 @@ class MemberBank(Base):
     user = db.relationship('User', uselist=False, backref='auth_user')
 
     # implement unique check at client: bank_id+user_id+account_number
-    def unique_record(self):
+    def is_unique_record(self):
         match_found = MemberBank.query.filter_by(
             user_id=self.user_id,
             bank_id=self.bank_id,
@@ -86,7 +86,7 @@ class MemberBank(Base):
 
         if match_found:
             # it may have found itself
-            return (match_found.id != self.id)
+            return (match_found.id == self.id)
         return True
 
     def __repr__(self):
