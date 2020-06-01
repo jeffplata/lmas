@@ -31,4 +31,4 @@ class MemberBankForm(FlaskForm):
                             coerce=int)
     account_number = StringField(validators=[DataRequired()])
     account_name = StringField(validators=[DataRequired()])
-    save_account = BooleanField(default=True)
+    submit = SubmitField('+Add account')

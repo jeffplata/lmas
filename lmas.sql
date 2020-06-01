@@ -521,6 +521,12 @@ COPY public.member_bank (id, date_created, date_modified, bank_id, user_id, acco
 13	2020-05-31 13:44:05.03908	2020-05-31 13:44:05.03908	1	5	1080190	Ian O Agana Jr
 14	2020-05-31 19:37:37.749687	2020-05-31 19:37:37.749687	2	5	1080190	Ian O Agana Jr
 15	2020-05-31 22:37:49.714409	2020-05-31 22:37:49.714409	2	4	12345678	Jeff M Plata the Great
+16	2020-06-01 23:33:47.804849	2020-06-01 23:33:47.804849	1	4	1234567890	Jeff M Plata the Great
+17	2020-06-01 23:40:19.7558	2020-06-01 23:40:19.7558	1	4	12345678911	Jeff M Plata the Great
+18	2020-06-01 23:47:57.097894	2020-06-01 23:47:57.097894	1	4	999999999	Jeff M Plata the Great
+19	2020-06-01 23:50:03.891124	2020-06-01 23:50:03.891124	1	4	1080190	Jeff M Plata the Great
+20	2020-06-01 23:56:23.907302	2020-06-01 23:56:23.907302	1	4	9999999990000	Jeff M Plata
+21	2020-06-01 23:57:19.352991	2020-06-01 23:57:19.352991	2	4	999999999	Jeff M Plata the Great
 \.
 
 
@@ -580,7 +586,7 @@ SELECT pg_catalog.setval('public.loan_id_seq', 11, true);
 -- Name: member_bank_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.member_bank_id_seq', 15, true);
+SELECT pg_catalog.setval('public.member_bank_id_seq', 21, true);
 
 
 --

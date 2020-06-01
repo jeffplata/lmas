@@ -1,11 +1,15 @@
 from datetime import datetime
 from app.main import bp
-from flask import render_template, flash, session, redirect
+from flask import render_template, flash, session, redirect, request
+from flask import url_for
 from flask_user import login_required
 from .forms import UserProfileForm, UserNameForm, MemberAccountForm
+from app.member.forms import MemberBankForm
 from app.user_models import UserDetail
-from app.member.models import Service, MemberBank
-from flask_table import Table, Col
+from app.member.models import Service, MemberBank, Bank
+from flask_table import Table, Col, OptCol
+from flask_login import current_user
+from app import db
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -31,10 +35,14 @@ def dashboard():
 
 
 class BankAccountTable(Table):
-    classes = ['table', 'table-condensed', 'table-striped']
-    # TODO: continue here
-    account_number = Col('account_number')
-    account_name = Col('account_name')
+    classes = ['table', 'table-condensed', 'table-striped', 'responsive']
+    no_items = 'No account defined.'
+    account_number = Col('Account Number')
+    account_name = Col('Account Name')
+    banks = Bank.query.all()
+    bank_options = {b.id: b.short_name for b in banks}
+    bank_id = OptCol('Bank', choices=bank_options)
+
 
 @bp.route('/user-profile/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -67,3 +75,38 @@ def edit_user_name(user_id):
             return redirect(session['back_url'])
 
     return render_template('edit_user_name.html', form=form)
+
+
+@bp.route('/edit-member-banks/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def edit_member_banks(user_id):
+    banks = Bank.all_active()
+    bank_accounts = MemberBank.query.filter_by(user_id=user_id).all()
+    table = BankAccountTable(bank_accounts)
+    form = MemberBankForm()
+    form.bank_name.choices = [(bank.id, bank.name) for bank in banks]
+
+    if not request.form:
+        form.account_name.data = current_user.detail.full_name
+
+    if form.validate_on_submit():
+        mb = MemberBank(bank_id=form.bank_name.data,
+                        user_id=user_id,
+                        account_number=form.account_number.data,
+                        account_name=form.account_name.data)
+        if mb.is_unique_record():
+            db.session.add(mb)
+            db.session.commit()
+            flash('Bank account successfully added.', 'info')
+            return redirect(url_for('main.edit_member_banks',
+                                    user_id=user_id))
+            # TODO: continue here
+            # resolve bank account add new/ edit
+        else:
+            flash('The account was not saved because a duplicate was found.',
+                  'error')
+
+    return render_template(
+        'edit_member_banks.html',
+        form=form,
+        table=table)

@@ -1,0 +1,37 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% from "bootstrap/wtf.html" import form_field %}
+{% extends "layout.html" %}
+
+{% block title %}
+{{ config.USER_APP_NAME }}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="row">
+  <div class="col-sm-7 col-md-6 col-lg-5 center-block">
+
+  <ol class="breadcrumb">
+    <li><a href="{{ url_for('main.user_profile', user_id=current_user.id) }}">User profile</a></li>
+    <li class="active">Edit member bank accounts</li>
+  </ol>
+
+	<h3>Edit member bank accounts</h3>
+	{{ table }}
+	<hr>
+	{{ wtf.quick_form(form, button_map={"submit": "primary"}) }}{# 
+  <div class="row" style="margin-left: 1px;">
+      <input type="submit" class="btn btn-primary" name="continue" value="+Add Account" formaction="{{ form.submit }}">
+  </div>
+
+  <br>
+  <form action="" method="post">
+  	{{ form_field( form.bank_name ) }}
+  	{{ form_field( form.account_number ) }}
+  	{{ form_field( form.account_name ) }}
+    </form> #}
+
+  </div>
+</div>
+
+{% endblock %}

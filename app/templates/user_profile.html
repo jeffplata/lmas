@@ -12,6 +12,7 @@ User Profile
         <div class="col-sm-7 col-md-6 col-lg-5 ">
             <h1>User profile</h1>
 
+            <hr>
             <h4 class="h4-gray">General Information</h4>
 
             <form class="form">
@@ -78,12 +79,11 @@ User Profile
             </form>
 
             <br>
+            <hr>
             <h4 class="h4-gray">Bank Accounts</h4>
-            <p>No accounts defined.
-            <br>
-            <a href="#">Edit accounts</a>
-            <br>
             {{ table }}
+            <a href="{{ url_for('main.edit_member_banks', user_id=user_id) }}">Edit accounts</a>
+            <br>
 
             {# {{ user_detail.full_name }}<a href="{{ url_for('main.edit_user_name', user_id=user_detail.user_id) }}">&nbspEdit</a> #}
             {% if not user_manager.USER_ENABLE_AUTH0 %}
@@ -92,6 +92,7 @@ User Profile
                 {% endif %}
                 {% if user_manager.USER_ENABLE_CHANGE_PASSWORD %}
                     <br>
+                    <hr>
                     <h4 class="h4-gray">Security</h4>
                     <p><a href="{{ url_for('user.change_password') }}">{%trans%}Change password{%endtrans%}</a></p>
                 {% endif %}
