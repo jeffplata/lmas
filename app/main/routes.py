@@ -100,13 +100,21 @@ def edit_member_banks(user_id):
             flash('Bank account successfully added.', 'info')
             return redirect(url_for('main.edit_member_banks',
                                     user_id=user_id))
-            # TODO: continue here
-            # resolve bank account add new/ edit
         else:
             flash('The account was not saved because a duplicate was found.',
                   'error')
 
     return render_template(
-        'edit_member_banks.html',
-        form=form,
-        table=table)
+        'edit_member_banks.html', form=form, table=table,
+        bank_accounts=bank_accounts)
+
+
+@bp.route('/delete-member-bank/<int:user_id>/<int:membank_id>',
+          methods=['GET', 'POST'])
+@login_required
+def delete_member_bank(user_id, membank_id):
+    member_bank = MemberBank.query.get_or_404(membank_id)
+    db.session.delete(member_bank)
+    db.session.commit()
+    flash('Bank Account successfully deleted.')
+    return redirect(url_for('main.edit_member_banks', user_id=user_id))

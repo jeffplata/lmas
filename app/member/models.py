@@ -79,15 +79,23 @@ class MemberBank(Base):
 
     # implement unique check at client: bank_id+user_id+account_number
     def is_unique_record(self):
+        # match_found = MemberBank.query.filter(
+        #     MemberBank.user_id == self.user_id,
+        #     MemberBank.bank_id == self.bank_id,
+        #     MemberBank.account_number == self.account_number,
+        #     MemberBank.id != self.id).first()
         match_found = MemberBank.query.filter_by(
             user_id=self.user_id,
             bank_id=self.bank_id,
-            account_number=self.account_number).first()
+            account_number=self.account_number).all()
 
         if match_found:
-            # it may have found itself
-            return (match_found.id == self.id)
-        return True
+            if len(match_found) > 1:
+                return False
+            else:
+                return (match_found[0].id == self.id)
+        else:
+            return True
 
     def __repr__(self):
         return "MB {},{},{},{}".format(

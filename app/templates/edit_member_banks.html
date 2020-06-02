@@ -11,13 +11,35 @@
 <div class="row">
   <div class="col-sm-7 col-md-6 col-lg-5 center-block">
 
+  <small>
   <ol class="breadcrumb">
     <li><a href="{{ url_for('main.user_profile', user_id=current_user.id) }}">User profile</a></li>
     <li class="active">Edit member bank accounts</li>
   </ol>
+  </small>
 
 	<h3>Edit member bank accounts</h3>
-	{{ table }}
+	{# {{ table }} #}
+	<table class="table table-condensed table-striped">
+		<thead>
+			<th>Acount Number</th>
+			<th>Acoount Name</th>
+			<th>Bank</th>
+			<th>Delete</th>
+		</thead>
+		<tbody>
+			{% for account in bank_accounts %}
+			<tr>
+				<td>{{ account.account_number }}</td>
+				<td>{{ account.account_name }}</td>
+				<td>{{ account.bank.short_name }}</td>
+				<td align="center"><a href="{{ url_for('main.delete_member_bank', user_id=current_user.id, membank_id=account.id ) }}"><i class="fa fa-trash"></></a></td>
+			</tr>
+			{% endfor %}
+		</tbody>
+
+	</table>
+
 	<hr>
 	{{ wtf.quick_form(form, button_map={"submit": "primary"}) }}{# 
   <div class="row" style="margin-left: 1px;">

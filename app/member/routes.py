@@ -153,9 +153,9 @@ def apply_for_loan_checkout():
 
         if 'back' in request.form:
             return redirect(url_for('member.apply_for_loan',
-                            user_id=user.id,
-                            service_id=service.id,
-                            reload='1'))
+                                    user_id=user.id,
+                                    service_id=service.id,
+                                    reload='1'))
 
         if form.validate_on_submit():
 
@@ -173,6 +173,7 @@ def apply_for_loan_checkout():
             db.session.flush()
             loan.memberbank_id = mb.id
             db.session.add(loan)
+            # TODO: continue here: account edit when only account name changed
             try:
                 db.session.commit()
                 user = None
