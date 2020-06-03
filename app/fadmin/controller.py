@@ -1,7 +1,7 @@
 # from app.fadmin import bp
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
-fromflask_admin.contrib.sqla.filters import BaseSQLAFilter
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_admin.menu import MenuLink
 # from flask_admin.form import SecureForm
 from flask_user import current_user
@@ -67,17 +67,22 @@ class ServiceModelView(MyModelView):
     form_overrides = {'description': TextAreaField}
 
 
-class MemberBankView(AppLibModelView):
-    column_filters = [User.email, Bank.short_name]
-
-
 class FilterByBank(BaseSQLAFilter):
     def apply(self, query, value, alias=None):
-        return query.filter_by(self.id=value)
-        # TODO: continue here
+        return query.filter_by(bank_id=value)
 
     def operation(self):
-        return 'is Brown'
+        return 'equals'
+
+    def get_options(self, view):
+        banks = Bank.query.all()
+        return [(b.id, b.short_name) for b in banks]
+
+
+class MemberBankView(AppLibModelView):
+    column_filters = [
+        User.email,
+        FilterByBank(column='bank_id', name='Bank')]
 
 
 admin.add_view(AppLibModelView(UserDetail, db.session, category='User'))
