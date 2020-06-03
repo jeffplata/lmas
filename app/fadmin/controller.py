@@ -1,6 +1,7 @@
 # from app.fadmin import bp
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
+fromflask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_admin.menu import MenuLink
 # from flask_admin.form import SecureForm
 from flask_user import current_user
@@ -8,7 +9,7 @@ from flask import current_app, url_for
 
 from app import db
 from app.user_models import User, Role, UserDetail
-from app.member.models import Service, Bank, MemberBank
+from app.member.models import Service, Bank, MemberBank, Loan
 from wtforms.fields.simple import TextAreaField
 
 
@@ -70,7 +71,17 @@ class MemberBankView(AppLibModelView):
     column_filters = [User.email, Bank.short_name]
 
 
+class FilterByBank(BaseSQLAFilter):
+    def apply(self, query, value, alias=None):
+        return query.filter_by(self.id=value)
+        # TODO: continue here
+
+    def operation(self):
+        return 'is Brown'
+
+
 admin.add_view(AppLibModelView(UserDetail, db.session, category='User'))
 admin.add_view(ServiceModelView(Service, db.session, category='Library'))
 admin.add_view(AppLibModelView(Bank, db.session, category='Library'))
 admin.add_view(MemberBankView(MemberBank, db.session, category='Library'))
+admin.add_view(AppLibModelView(Loan, db.session, category='Loan'))
