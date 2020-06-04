@@ -19,10 +19,10 @@ loan = None
 amortization = []
 
 
-def amortize_loan(amount, terms, interest_rate):
+def amortize_loan(amount, terms, interest_rate, date_filed):
     amortization = []
     prev_bal = amount
-    due_date_1 = datetime.now() + relativedelta(months=1)
+    due_date_1 = date_filed + relativedelta(months=1)
     due_date = due_date_1
 
     for i in range(1, terms + 1):
@@ -88,12 +88,16 @@ def apply_for_loan(user_id, service_id, reload='0'):
 
     net_proceeds = loan_amount - balance - process_fee
 
+    date_filed = datetime.now()
+
     amortization = amortize_loan(loan_amount,
                                  loan_terms,
-                                 service.interest_rate)
+                                 service.interest_rate,
+                                 date_filed)
     loan = Loan(
         user_id=user.id,
         service_id=service.id,
+        date_filed=date_filed,
         amount=loan_amount,
         terms=loan_terms,
         interest_rate=service.interest_rate,
@@ -102,7 +106,6 @@ def apply_for_loan(user_id, service_id, reload='0'):
         net_proceeds=net_proceeds,
         first_due_date=amortization[0].due_date,
         last_due_date=amortization[-1].due_date)
-    # amortization = amortize_loan(loan)
 
     if form.validate_on_submit():
         if 'continue' in request.form:
