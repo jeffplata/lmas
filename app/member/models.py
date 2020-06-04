@@ -22,6 +22,7 @@ class Loan(Base):
     user_id = db.Column(db.Integer(),
                         db.ForeignKey(
                         'auth_user.id', ondelete='CASCADE'))
+    date_filed = db.Column(db.DateTime, default=db.func.current_timestamp())
     amount = db.Column(db.Numeric(15, 2), nullable=False)
     terms = db.Column(db.Integer(), nullable=False)
     interest_rate = db.Column(db.Numeric(15, 2))
@@ -31,6 +32,8 @@ class Loan(Base):
     first_due_date = db.Column(db.Date(), nullable=False)
     last_due_date = db.Column(db.Date())
     memberbank_id = db.Column(db.Integer())
+
+    user = db.relationship('User', uselist=False, backref='loan')
     # the bank reference is only for convenience
     #    user can remove his bank detail anytime
 

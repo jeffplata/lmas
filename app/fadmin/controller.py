@@ -85,8 +85,14 @@ class MemberBankView(AppLibModelView):
         FilterByBank(column='bank_id', name='Bank')]
 
 
+class LoanView(AppLibModelView):
+    column_list = ('id', 'date_filed', 'user.detail.full_name', 'amount',
+                   'terms', 'previous_balance', 'processing_fee',
+                   'net_proceeds', 'first_due_date', 'last_due_date')
+
+
 admin.add_view(AppLibModelView(UserDetail, db.session, category='User'))
 admin.add_view(ServiceModelView(Service, db.session, category='Library'))
 admin.add_view(AppLibModelView(Bank, db.session, category='Library'))
 admin.add_view(MemberBankView(MemberBank, db.session, category='Library'))
-admin.add_view(AppLibModelView(Loan, db.session, category='Loan'))
+admin.add_view(LoanView(Loan, db.session, category='Loan'))
