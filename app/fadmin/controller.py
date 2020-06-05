@@ -89,6 +89,7 @@ class LoanView(AppLibModelView):
     column_list = ('id', 'date_filed', 'user.detail.full_name', 'amount',
                    'terms', 'previous_balance', 'processing_fee',
                    'net_proceeds', 'first_due_date', 'last_due_date')
+    column_labels = {'user.detail.full_name': 'Borrower'}
 
 
 admin.add_view(AppLibModelView(UserDetail, db.session, category='User'))
