@@ -2,6 +2,26 @@ from app import db
 from app.user_models import Base
 
 
+class SalaryGrade(Base):
+    __tablename__ = 'salary_grade'
+    sg = db.Column(db.Integer(), nullable=False)
+    step = db.Column(db.Integer(), nullable=False)
+    salary = db.Column(db.Numeric(15, 2))
+    group_name = db.Column(db.String(128))
+    active = db.Column(db.Boolean(), default=True)
+
+    @classmethod
+    def all_active(cls, all_active=True):
+        if all_active:
+            return cls.query.filter_by(active=True).all()
+        else:
+            return cls.query.filter(cls.active.isnot(True)).all()
+
+    @classmethod
+    def set_active(cls, active=True):
+        cls.active = active
+
+
 class Service(Base):
     __tablename__ = 'service'
     name = db.Column(db.String(128), nullable=False, unique=True)

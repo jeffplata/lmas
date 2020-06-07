@@ -1,0 +1,17 @@
+{% extends 'admin/master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block body %}
+
+	{% if messages %}
+	{# {% set mm = messages.split('\n') %} #}
+	<div class="alert alert-danger alert-dismissable">
+		{# {% for m in mm %} #}
+			{{ messages | safe }}<br/>
+		{# {% endfor %} #}
+	</div>
+	{% endif %}
+  <h3>Import Salary Grade</h3>
+  {{ wtf.quick_form(form) }}
+	
+{% endblock %}

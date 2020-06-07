@@ -141,7 +141,6 @@ def apply_for_loan_checkout():
     form.bank_name.choices = [(bank.id, bank.name) for bank in banks]
 
     if not request.form:
-        # get the first saved bank, get all when UI is fully deved
         member_banks = MemberBank.query.filter_by(user_id=user.id).all()
         if member_banks:
             form.member_bank_id.data = member_banks[0].id

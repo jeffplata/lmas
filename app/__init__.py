@@ -1,5 +1,6 @@
-# import os
-
+import os
+import logging
+from logging.handlers import SMTPHandler, RotatingFileHandler
 from config import Config
 # from app.user_models import User
 
@@ -12,6 +13,7 @@ from flask_migrate import Migrate
 from flask_user import UserManager
 from flask_mail import Mail
 from flask_babel import Babel
+import flask_excel as excel
 
 
 bootstrap = Bootstrap()
@@ -37,6 +39,7 @@ def create_app(config_class=Config):
     UserManager(app, db, User)
     mail.init_app(app)
     babel.init_app(app)
+    excel.init_excel(app)
 
     # register blueprints
     with app.app_context():
@@ -57,11 +60,46 @@ def create_app(config_class=Config):
 
         # from flask_mail import Message
 
-        # msg = Message(subject="Hello",
-        #               sender="jeffflask@gmail.com",
-        #               recipients=["jeffflask@gmail.com"],
-        #               body="This is a test email I sent with Gmail and Python!")
+        # msg = Message(
+        #     subject="Hello",
+        #     sender="jeffflask@gmail.com",
+        #     recipients=["jeffflask@gmail.com"],
+        #     body="This is a test email I sent with Gmail and Python!")
         # mail.send(msg)
+
+        appname = app.config['USER_APP_NAME']
+
+        if not app.debug and not app.testing:
+            if app.config['MAIL_SERVER']:
+                auth = None
+                if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+                    auth = (app.config['MAIL_USERNAME'],
+                            app.config['MAIL_PASSWORD'])
+                secure = None
+                if app.config['MAIL_USE_TLS']:
+                    secure = ()
+                mail_handler = SMTPHandler(
+                    mailhost=(app.config['MAIL_SERVER'],
+                              app.config['MAIL_PORT']),
+                    fromaddr='no-reply@' + app.config['MAIL_SERVER'],
+                    toaddrs=app.config['ADMINS'],
+                    subject=appname + ' Failure',
+                    credentials=auth, secure=secure)
+                mail_handler.setLevel(logging.ERROR)
+                app.logger.addHandler(mail_handler)
+
+            if not os.path.exists('logs'):
+                os.mkdir('logs')
+            file_handler = RotatingFileHandler('logs/' + appname + '.log',
+                                               maxBytes=10240, backupCount=10)
+            file_handler.setFormatter(logging.Formatter(
+                '%(asctime)s %(levelname)s: %(message)s '
+                '[in %(pathname)s:%(lineno)d]'))
+            file_handler.setLevel(logging.INFO)
+            app.logger.addHandler(file_handler)
+
+            app.logger.setLevel(logging.INFO)
+            app.logger.info(appname + ' startup')
 
     return app
 

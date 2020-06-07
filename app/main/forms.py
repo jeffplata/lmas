@@ -13,7 +13,8 @@ class UserProfileForm(FlaskForm):
     position = StringField(render_kw={"readonly": True})
     salary = StringField(render_kw={"readonly": True})
     office = StringField(render_kw={"readonly": True})
-    beneficiaries = TextAreaField(render_kw={"readonly": True, 'style': 'resize:none'})
+    beneficiaries = TextAreaField(
+        render_kw={"readonly": True, 'style': 'resize:none'})
 
 
 class UserNameForm(FlaskForm):

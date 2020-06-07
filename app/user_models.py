@@ -100,6 +100,12 @@ class UserDetail(Base):
     middle_name = db.Column(db.String(128))
     suffix = db.Column(db.String(20))
 
+    user = db.relationship('User', uselist=False, backref='auth_user_detail')
+    salary = db.relationship(
+        'MemberSalary', uselist=False, backref='auth_user_detail')
+
+    db.UniqueConstraint(last_name, first_name, middle_name, suffix)
+
     @hybrid_property
     def full_name(self):
         return "{}{}{}{}".format(
@@ -107,6 +113,10 @@ class UserDetail(Base):
             " " + self.middle_name if self.middle_name else "",
             " " + self.last_name if self.last_name else "",
             " " + self.suffix if self.suffix else "")
+
+    @full_name.expression
+    def full_name(cls):
+        return cls.last_name
 
     def __repr__(self):
         return "User [{}] {}, {}".format(self.user_id, self.last_name,
@@ -116,3 +126,12 @@ class UserDetail(Base):
         return "{}{}".format(
             self.last_name,
             ", " + self.first_name if self.first_name else "")
+
+
+class MemberSalary(Base):
+    __tablename__ = "member_salary"
+    user_id = db.Column(
+        db.Integer(),
+        db.ForeignKey('auth_user_detail.id', ondelete='CASCADE'))
+    amount = db.Column(db.Numeric(15, 2))
+    effective_date = db.Column(db.Date())
