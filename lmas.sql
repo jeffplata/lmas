@@ -549,7 +549,6 @@ COPY public.auth_user (id, date_created, date_modified, username, email, passwor
 5	2020-04-26 10:50:50	2020-05-04 15:16:09.676687	\N	ian@yahoo.com	$2b$12$VNCoAxtVDEoWYxaYD55pVOROkNz9ZWBv.C1.rkQbOjYmcXIo7iCj2	2020-05-04 15:16:00	t
 8	2020-05-04 17:44:35.714052	2020-05-04 17:44:35.714052	test2	test2@email.com	$2b$12$W1rsZxJKkh4UV4gjgvgJtunRmL6vZKwmQHrwRTw80qjh8.DhBLbqu	2020-05-04 17:44:35.714052	t
 9	2020-05-04 17:49:24	2020-05-04 17:49:24	test3	test3@yahoo.com	$2b$12$E6qGt2Ci21JISnLULwgJ5OXhW0QXbt9zzsr.UQ6NXnK7dNso46jW.	2020-05-04 17:49:24	t
-7	2020-05-04 17:42:40	2020-05-04 17:42:40	test	test@gmail.com	$2b$12$Mvt7YNO51L3qmF/i6Ieo4u3bjxiSxsE/sQSN7Z1JTjYUGiKs1uhbm	2020-05-04 17:42:40	t
 10	2020-05-04 21:15:52.2467	2020-05-04 21:15:52.2467	\N	test4@gmail.com	$2b$12$s/zHvniDVAmlWIjHDW8EiuIAfvbQdn8LqM0iyJS/Pzd./os9cg6Wu	2020-05-04 21:15:52.2467	f
 \.
 
@@ -561,7 +560,7 @@ COPY public.auth_user (id, date_created, date_modified, username, email, passwor
 COPY public.auth_user_detail (id, date_created, date_modified, user_id, last_name, first_name, middle_name, suffix) FROM stdin;
 1	\N	\N	4	Plata	Jeff	M	the Great
 2	2020-05-04 01:01:16	2020-05-04 15:51:03.867823	5	Agana	Ian	O	Jr
-3	2020-05-31 19:50:14.637292	2020-05-31 19:50:14.637292	7	Test Lastname	Test Firstname	Test Middle	\N
+3	2020-05-31 19:50:14.637292	2020-06-09 05:12:38.004627	\N	Test Lastname	Test Firstname	Test Middle	\N
 \.
 
 
