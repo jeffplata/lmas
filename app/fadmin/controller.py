@@ -16,6 +16,7 @@ from .forms import UploadForm, MemberForm
 from werkzeug.utils import secure_filename
 from sqlalchemy import exc
 from gettext import gettext, ngettext
+from datetime import datetime
 
 
 class MyAdminIndexView(AdminIndexView):
@@ -105,32 +106,48 @@ class MemberView(AppLibModelView):
     column_labels = {'user.email': 'Email', 'salary.amount': 'Salary'}
     column_sortable_list = column_list
 
+    # TODO: override validate_form() to check unique email address
+    #     if ok, save/flush on on_model_chage to get the id
+    #     and assign it to UserDetail.user_id
+    def validate_form(self, form):
+        if not form.user_id.data:
+            # this is a new record
+            user = User.query.filter_by(email=form.email.data).first()
+            if user:
+                if UserDetail.query.filter_by(user_id=user.id).first():
+                    flash(f"Record not saved. '{form.email.data}' "
+                          f"is used by another Member.")
+                    return False
+            return super(MyModelView, self).validate_form(form)
+
     def on_model_change(self, form, model, is_created=False):
         if is_created:
-            u = User(email=form.email.data)
-            db.session.add(u)
-            try:
-                db.session.flush()
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()  # do this immediately for SQLAlchemy
-                messages = e.message if hasattr(e, 'message') else str(e)
-                if (messages.find('unique constraint') != -1):
-                    messages = f"Email '{form.email.data}' \
-                        is already used by another user."
-            print('user id:')
-            print(u.id)
-        db.session.rollback()
-        # TODO: catch error messages
+            user = User.query.filter_by(email=form.email.data).first()
+            if user:
+                if UserDetail.query.filter_by(user_id=user.id).first():
+                    flash(f"Record not saved. '{form.email.data}' "
+                          f"is used by another Member.")
 
-        # TODO: override validate_form() to check unique email address
-        #     if ok, save/flush on on_model_chage to get the id
-        #     and assign it to UserDetail.user_id
-        # def validate_form(self, form):
-        #     """ Custom validation code that checks dates """
-        #     if form.start_time.data > form.end_time.data:
-        #         flash("start time cannot be greater than end time!")
-        #         return False
-        #     return super(MyModelView, self).validate_form(form)
+                    return
+            else:
+                u = User(email=form.email.data,
+                         email_confirmed_at=datetime.utcnow(),
+                         password=current_app.user_manager.
+                         hash_password('Password1'),
+                         active=True)
+                db.session.add(u)
+
+            try:
+                db.session.flush()  # flush, so we can access a user.id if new
+                model.user_id = user.id
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()  # do this immediately for SQLAlchemy
+                if not self.handle_view_exception(e):
+                    raise
+            # except exc.SQLAlchemyError as e:
+            #     db.session.rollback()  # do this immediately for SQLAlchemy
+            #     messages = e.message if hasattr(e, 'message') else str(e)
 
 
 class FilterSGByGrade(BaseSQLAFilter):

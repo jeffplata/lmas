@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField
+from wtforms import SubmitField, StringField, HiddenField
 from wtforms.validators import DataRequired, Email
 from flask_wtf.file import FileField
 
@@ -12,6 +12,7 @@ class UploadForm(FlaskForm):
 
 
 class MemberForm(FlaskForm):
+    user_id = HiddenField()
     email = StringField(validators=[DataRequired(), Email()])
     last_name = StringField(validators=[DataRequired()])
     first_name = StringField(validators=[DataRequired()])
