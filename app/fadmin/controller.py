@@ -144,10 +144,18 @@ class MemberView(AppLibModelView):
 
     def on_model_change(self, form, UserDetail, is_created):
         print("===================///===================")
+        try:
+            db.session.commit()
+        except SQLAlchemyError as e:
+            err_message = e.message if hasattr(e, 'message') else str(e)
+            if (err_message.find('unique constraint') != -1):
+                err_message = f"Member details cannot be saved." +\
+                              f"The email '{form.abs.data}' is used by."
+
         print(form.email.data)
-        user1 = User.query.filter_by(email=form.email.data).first()
-        form.user_id.data = user1.id
-        print("****")
+        print(form.user_id.data)
+        # user1 = User.query.filter_by(email=form.email.data).first()
+        # form.user_id.data = user1.id
         print(form.user_id.data)
         return
 
