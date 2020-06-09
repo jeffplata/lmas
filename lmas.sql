@@ -46,7 +46,7 @@ CREATE TABLE public.alembic_version (
 ALTER TABLE public.alembic_version OWNER TO postgres;
 
 --
--- Name: auth_role; Type: TABLE; Schema: public; Owner: User
+-- Name: auth_role; Type: TABLE; Schema: public; Owner: jeff
 --
 
 CREATE TABLE public.auth_role (
@@ -58,10 +58,10 @@ CREATE TABLE public.auth_role (
 );
 
 
-ALTER TABLE public.auth_role OWNER TO "User";
+ALTER TABLE public.auth_role OWNER TO jeff;
 
 --
--- Name: auth_role_id_seq; Type: SEQUENCE; Schema: public; Owner: User
+-- Name: auth_role_id_seq; Type: SEQUENCE; Schema: public; Owner: jeff
 --
 
 CREATE SEQUENCE public.auth_role_id_seq
@@ -73,17 +73,17 @@ CREATE SEQUENCE public.auth_role_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_role_id_seq OWNER TO "User";
+ALTER TABLE public.auth_role_id_seq OWNER TO jeff;
 
 --
--- Name: auth_role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: User
+-- Name: auth_role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: jeff
 --
 
 ALTER SEQUENCE public.auth_role_id_seq OWNED BY public.auth_role.id;
 
 
 --
--- Name: auth_user; Type: TABLE; Schema: public; Owner: User
+-- Name: auth_user; Type: TABLE; Schema: public; Owner: jeff
 --
 
 CREATE TABLE public.auth_user (
@@ -98,10 +98,10 @@ CREATE TABLE public.auth_user (
 );
 
 
-ALTER TABLE public.auth_user OWNER TO "User";
+ALTER TABLE public.auth_user OWNER TO jeff;
 
 --
--- Name: auth_user_detail; Type: TABLE; Schema: public; Owner: User
+-- Name: auth_user_detail; Type: TABLE; Schema: public; Owner: jeff
 --
 
 CREATE TABLE public.auth_user_detail (
@@ -116,10 +116,10 @@ CREATE TABLE public.auth_user_detail (
 );
 
 
-ALTER TABLE public.auth_user_detail OWNER TO "User";
+ALTER TABLE public.auth_user_detail OWNER TO jeff;
 
 --
--- Name: auth_user_detail_id_seq; Type: SEQUENCE; Schema: public; Owner: User
+-- Name: auth_user_detail_id_seq; Type: SEQUENCE; Schema: public; Owner: jeff
 --
 
 CREATE SEQUENCE public.auth_user_detail_id_seq
@@ -131,17 +131,17 @@ CREATE SEQUENCE public.auth_user_detail_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_user_detail_id_seq OWNER TO "User";
+ALTER TABLE public.auth_user_detail_id_seq OWNER TO jeff;
 
 --
--- Name: auth_user_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: User
+-- Name: auth_user_detail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: jeff
 --
 
 ALTER SEQUENCE public.auth_user_detail_id_seq OWNED BY public.auth_user_detail.id;
 
 
 --
--- Name: auth_user_id_seq; Type: SEQUENCE; Schema: public; Owner: User
+-- Name: auth_user_id_seq; Type: SEQUENCE; Schema: public; Owner: jeff
 --
 
 CREATE SEQUENCE public.auth_user_id_seq
@@ -153,17 +153,17 @@ CREATE SEQUENCE public.auth_user_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_user_id_seq OWNER TO "User";
+ALTER TABLE public.auth_user_id_seq OWNER TO jeff;
 
 --
--- Name: auth_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: User
+-- Name: auth_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: jeff
 --
 
 ALTER SEQUENCE public.auth_user_id_seq OWNED BY public.auth_user.id;
 
 
 --
--- Name: auth_user_roles; Type: TABLE; Schema: public; Owner: User
+-- Name: auth_user_roles; Type: TABLE; Schema: public; Owner: jeff
 --
 
 CREATE TABLE public.auth_user_roles (
@@ -175,10 +175,10 @@ CREATE TABLE public.auth_user_roles (
 );
 
 
-ALTER TABLE public.auth_user_roles OWNER TO "User";
+ALTER TABLE public.auth_user_roles OWNER TO jeff;
 
 --
--- Name: auth_user_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: User
+-- Name: auth_user_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: jeff
 --
 
 CREATE SEQUENCE public.auth_user_roles_id_seq
@@ -190,10 +190,10 @@ CREATE SEQUENCE public.auth_user_roles_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.auth_user_roles_id_seq OWNER TO "User";
+ALTER TABLE public.auth_user_roles_id_seq OWNER TO jeff;
 
 --
--- Name: auth_user_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: User
+-- Name: auth_user_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: jeff
 --
 
 ALTER SEQUENCE public.auth_user_roles_id_seq OWNED BY public.auth_user_roles.id;
@@ -402,7 +402,7 @@ ALTER SEQUENCE public.salary_grade_id_seq OWNED BY public.salary_grade.id;
 
 
 --
--- Name: service; Type: TABLE; Schema: public; Owner: User
+-- Name: service; Type: TABLE; Schema: public; Owner: jeff
 --
 
 CREATE TABLE public.service (
@@ -418,10 +418,10 @@ CREATE TABLE public.service (
 );
 
 
-ALTER TABLE public.service OWNER TO "User";
+ALTER TABLE public.service OWNER TO jeff;
 
 --
--- Name: service_id_seq; Type: SEQUENCE; Schema: public; Owner: User
+-- Name: service_id_seq; Type: SEQUENCE; Schema: public; Owner: jeff
 --
 
 CREATE SEQUENCE public.service_id_seq
@@ -433,38 +433,38 @@ CREATE SEQUENCE public.service_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.service_id_seq OWNER TO "User";
+ALTER TABLE public.service_id_seq OWNER TO jeff;
 
 --
--- Name: service_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: User
+-- Name: service_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: jeff
 --
 
 ALTER SEQUENCE public.service_id_seq OWNED BY public.service.id;
 
 
 --
--- Name: auth_role id; Type: DEFAULT; Schema: public; Owner: User
+-- Name: auth_role id; Type: DEFAULT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_role ALTER COLUMN id SET DEFAULT nextval('public.auth_role_id_seq'::regclass);
 
 
 --
--- Name: auth_user id; Type: DEFAULT; Schema: public; Owner: User
+-- Name: auth_user id; Type: DEFAULT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user ALTER COLUMN id SET DEFAULT nextval('public.auth_user_id_seq'::regclass);
 
 
 --
--- Name: auth_user_detail id; Type: DEFAULT; Schema: public; Owner: User
+-- Name: auth_user_detail id; Type: DEFAULT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user_detail ALTER COLUMN id SET DEFAULT nextval('public.auth_user_detail_id_seq'::regclass);
 
 
 --
--- Name: auth_user_roles id; Type: DEFAULT; Schema: public; Owner: User
+-- Name: auth_user_roles id; Type: DEFAULT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user_roles ALTER COLUMN id SET DEFAULT nextval('public.auth_user_roles_id_seq'::regclass);
@@ -506,7 +506,7 @@ ALTER TABLE ONLY public.salary_grade ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- Name: service id; Type: DEFAULT; Schema: public; Owner: User
+-- Name: service id; Type: DEFAULT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.service ALTER COLUMN id SET DEFAULT nextval('public.service_id_seq'::regclass);
@@ -517,12 +517,12 @@ ALTER TABLE ONLY public.service ALTER COLUMN id SET DEFAULT nextval('public.serv
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-33085d429b21
+810956318d00
 \.
 
 
 --
--- Data for Name: auth_role; Type: TABLE DATA; Schema: public; Owner: User
+-- Data for Name: auth_role; Type: TABLE DATA; Schema: public; Owner: jeff
 --
 
 COPY public.auth_role (id, date_created, date_modified, name, label) FROM stdin;
@@ -539,7 +539,7 @@ COPY public.auth_role (id, date_created, date_modified, name, label) FROM stdin;
 
 
 --
--- Data for Name: auth_user; Type: TABLE DATA; Schema: public; Owner: User
+-- Data for Name: auth_user; Type: TABLE DATA; Schema: public; Owner: jeff
 --
 
 COPY public.auth_user (id, date_created, date_modified, username, email, password, email_confirmed_at, active) FROM stdin;
@@ -550,22 +550,24 @@ COPY public.auth_user (id, date_created, date_modified, username, email, passwor
 8	2020-05-04 17:44:35.714052	2020-05-04 17:44:35.714052	test2	test2@email.com	$2b$12$W1rsZxJKkh4UV4gjgvgJtunRmL6vZKwmQHrwRTw80qjh8.DhBLbqu	2020-05-04 17:44:35.714052	t
 9	2020-05-04 17:49:24	2020-05-04 17:49:24	test3	test3@yahoo.com	$2b$12$E6qGt2Ci21JISnLULwgJ5OXhW0QXbt9zzsr.UQ6NXnK7dNso46jW.	2020-05-04 17:49:24	t
 10	2020-05-04 21:15:52.2467	2020-05-04 21:15:52.2467	\N	test4@gmail.com	$2b$12$s/zHvniDVAmlWIjHDW8EiuIAfvbQdn8LqM0iyJS/Pzd./os9cg6Wu	2020-05-04 21:15:52.2467	f
+18	2020-06-09 07:35:00.748267	2020-06-09 07:35:00.748267	\N	sfsd@email.com	$2b$12$u1BdHfelGZywrkifDhqmgeGTmbfA8ytm565HoRzyaYeyMtqUnN7U.	2020-06-08 23:35:00.754902	t
 \.
 
 
 --
--- Data for Name: auth_user_detail; Type: TABLE DATA; Schema: public; Owner: User
+-- Data for Name: auth_user_detail; Type: TABLE DATA; Schema: public; Owner: jeff
 --
 
 COPY public.auth_user_detail (id, date_created, date_modified, user_id, last_name, first_name, middle_name, suffix) FROM stdin;
 1	\N	\N	4	Plata	Jeff	M	the Great
 2	2020-05-04 01:01:16	2020-05-04 15:51:03.867823	5	Agana	Ian	O	Jr
 3	2020-05-31 19:50:14.637292	2020-06-09 05:12:38.004627	\N	Test Lastname	Test Firstname	Test Middle	\N
+6	2020-06-09 07:35:00.748267	2020-06-09 08:06:17.611908	\N	Plata	Joeffrey		
 \.
 
 
 --
--- Data for Name: auth_user_roles; Type: TABLE DATA; Schema: public; Owner: User
+-- Data for Name: auth_user_roles; Type: TABLE DATA; Schema: public; Owner: jeff
 --
 
 COPY public.auth_user_roles (id, date_created, date_modified, user_id, role_id) FROM stdin;
@@ -897,7 +899,7 @@ COPY public.salary_grade (id, date_created, date_modified, sg, step, salary, gro
 
 
 --
--- Data for Name: service; Type: TABLE DATA; Schema: public; Owner: User
+-- Data for Name: service; Type: TABLE DATA; Schema: public; Owner: jeff
 --
 
 COPY public.service (id, date_created, date_modified, name, description, interest_rate, min_term, max_term, active) FROM stdin;
@@ -907,28 +909,28 @@ COPY public.service (id, date_created, date_modified, name, description, interes
 
 
 --
--- Name: auth_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: User
+-- Name: auth_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
 --
 
 SELECT pg_catalog.setval('public.auth_role_id_seq', 9, true);
 
 
 --
--- Name: auth_user_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: User
+-- Name: auth_user_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
 --
 
-SELECT pg_catalog.setval('public.auth_user_detail_id_seq', 5, true);
-
-
---
--- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: User
---
-
-SELECT pg_catalog.setval('public.auth_user_id_seq', 16, true);
+SELECT pg_catalog.setval('public.auth_user_detail_id_seq', 10, true);
 
 
 --
--- Name: auth_user_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: User
+-- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
+--
+
+SELECT pg_catalog.setval('public.auth_user_id_seq', 21, true);
+
+
+--
+-- Name: auth_user_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
 --
 
 SELECT pg_catalog.setval('public.auth_user_roles_id_seq', 1, true);
@@ -970,7 +972,7 @@ SELECT pg_catalog.setval('public.salary_grade_id_seq', 305, true);
 
 
 --
--- Name: service_id_seq; Type: SEQUENCE SET; Schema: public; Owner: User
+-- Name: service_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
 --
 
 SELECT pg_catalog.setval('public.service_id_seq', 2, true);
@@ -985,7 +987,7 @@ ALTER TABLE ONLY public.alembic_version
 
 
 --
--- Name: auth_role auth_role_name_key; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_role auth_role_name_key; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_role
@@ -993,7 +995,7 @@ ALTER TABLE ONLY public.auth_role
 
 
 --
--- Name: auth_role auth_role_pkey; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_role auth_role_pkey; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_role
@@ -1001,7 +1003,7 @@ ALTER TABLE ONLY public.auth_role
 
 
 --
--- Name: auth_user_detail auth_user_detail_last_name_first_name_middle_name_suffix_key; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_user_detail auth_user_detail_last_name_first_name_middle_name_suffix_key; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user_detail
@@ -1009,7 +1011,7 @@ ALTER TABLE ONLY public.auth_user_detail
 
 
 --
--- Name: auth_user_detail auth_user_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_user_detail auth_user_detail_pkey; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user_detail
@@ -1017,7 +1019,15 @@ ALTER TABLE ONLY public.auth_user_detail
 
 
 --
--- Name: auth_user auth_user_email_key; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_user_detail auth_user_detail_user_id_key; Type: CONSTRAINT; Schema: public; Owner: jeff
+--
+
+ALTER TABLE ONLY public.auth_user_detail
+    ADD CONSTRAINT auth_user_detail_user_id_key UNIQUE (user_id);
+
+
+--
+-- Name: auth_user auth_user_email_key; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user
@@ -1025,7 +1035,7 @@ ALTER TABLE ONLY public.auth_user
 
 
 --
--- Name: auth_user auth_user_pkey; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_user auth_user_pkey; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user
@@ -1033,7 +1043,7 @@ ALTER TABLE ONLY public.auth_user
 
 
 --
--- Name: auth_user_roles auth_user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_user_roles auth_user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user_roles
@@ -1097,7 +1107,7 @@ ALTER TABLE ONLY public.salary_grade
 
 
 --
--- Name: service service_name_key; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: service service_name_key; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.service
@@ -1105,7 +1115,7 @@ ALTER TABLE ONLY public.service
 
 
 --
--- Name: service service_pkey; Type: CONSTRAINT; Schema: public; Owner: User
+-- Name: service service_pkey; Type: CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.service
@@ -1113,7 +1123,7 @@ ALTER TABLE ONLY public.service
 
 
 --
--- Name: auth_user_detail auth_user_detail_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_user_detail auth_user_detail_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user_detail
@@ -1121,7 +1131,7 @@ ALTER TABLE ONLY public.auth_user_detail
 
 
 --
--- Name: auth_user_roles auth_user_roles_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_user_roles auth_user_roles_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user_roles
@@ -1129,7 +1139,7 @@ ALTER TABLE ONLY public.auth_user_roles
 
 
 --
--- Name: auth_user_roles auth_user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: User
+-- Name: auth_user_roles auth_user_roles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jeff
 --
 
 ALTER TABLE ONLY public.auth_user_roles

@@ -94,7 +94,8 @@ class UserRoles(Base):
 class UserDetail(Base):
     __tablename__ = "auth_user_detail"
     user_id = db.Column(db.Integer(),
-                        db.ForeignKey('auth_user.id', ondelete='CASCADE'))
+                        db.ForeignKey('auth_user.id', ondelete='CASCADE'),
+                        unique=True)
     last_name = db.Column(db.String(128), nullable=False)
     first_name = db.Column(db.String(128))
     middle_name = db.Column(db.String(128))
