@@ -16,7 +16,8 @@ from .forms import UploadForm, MemberForm
 from werkzeug.utils import secure_filename
 from sqlalchemy import exc
 from gettext import gettext, ngettext
-from datetime import datetime
+# from datetime import datetime
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class MyAdminIndexView(AdminIndexView):
@@ -147,16 +148,16 @@ class MemberView(AppLibModelView):
         try:
             db.session.commit()
         except SQLAlchemyError as e:
+            db.session.rollback()
+
             err_message = e.message if hasattr(e, 'message') else str(e)
             if (err_message.find('unique constraint') != -1):
                 err_message = f"Member details cannot be saved." +\
                               f"The email '{form.abs.data}' is used by."
 
-        print(form.email.data)
-        print(form.user_id.data)
-        # user1 = User.query.filter_by(email=form.email.data).first()
-        # form.user_id.data = user1.id
-        print(form.user_id.data)
+            if not self.handle_view_exception(e):
+                raise
+
         return
 
         # super().on_model_change(form, UserDetail, is_created)
