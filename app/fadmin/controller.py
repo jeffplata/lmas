@@ -106,6 +106,15 @@ class MemberView(AppLibModelView):
     column_list = ('id', 'user.email', 'full_name', 'salary.amount')
     column_labels = {'user.email': 'Email', 'salary.amount': 'Salary'}
     column_sortable_list = column_list
+    column_default_sort = ('id')
+
+    def edit_form(self, obj):
+        form = super(MemberView, self).edit_form(obj)
+        # email = request.args.get('email')
+        # if email and not form.email.data:
+        # TODO: disable autoflush
+        form.email.data = obj.user.email
+        return form
 
     # TODO: override validate_form() to check unique email address
     #     if ok, save/flush on on_model_chage to get the id
@@ -113,38 +122,25 @@ class MemberView(AppLibModelView):
     def validate_form(self, form):
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            form.user_id.data = user.id
-        print('vvvvvvv')
-        print(form.user_id.data)
+            # the email is found in the User table
+            dup_email = UserDetail.query.filter_by(user_id=user.id).first()
+            if dup_email:
+                if (('user_id' not in form) or
+                        (('user_id' in form) and
+                            (form.user_id.data != str(user.id)))):
+                    # email already used in other UserDetail
+                    flash(f"Record cannot be saved because email "
+                          f"'{form.email.data}' "
+                          f"is used by another Member.", 'error')
+                    return False
+
+            form.user_id.data = str(user.id)
 
         return super(MemberView, self).validate_form(form)
 
-    # user = User.query.filter_by(email=form.email.data).first()
-    # if user:
-    #     form.user_id.data = user.id
-    #     if ('user_id' in form) and (form.user_id.data == str(user.id)):
-    #         return True
-    #     else:
-    #         # email already used in other UserDetail
-    #         flash(f"Record cannot be saved because email "
-    #               f"'{form.email.data}' "
-    #               f"is used by another Member.", 'error')
-    #         return False
-
-    # return super(MemberView, self).validate_form(form)
-
-    # if ('user_id' in form) and (not form.user_id.data):
-    #     # this is a new record
-    #     user = User.query.filter_by(email=form.email.data).first()
-    #     if user:
-    #         if UserDetail.query.filter_by(user_id=user.id).first():
-    #             flash(f"Record not saved. Email '{form.email.data}' "
-    #                   f"is used by another Member.", 'error')
-    #             return False
-    # return super(MemberView, self).validate_form(form)
-
     def on_model_change(self, form, UserDetail, is_created):
         print("===================///===================")
+        print(form.user_id)
         try:
             db.session.commit()
         except SQLAlchemyError as e:
@@ -153,48 +149,12 @@ class MemberView(AppLibModelView):
             err_message = e.message if hasattr(e, 'message') else str(e)
             if (err_message.find('unique constraint') != -1):
                 err_message = f"Member details cannot be saved." +\
-                              f"The email '{form.abs.data}' is used by."
+                              f"The email '{form.email.data}' is used by."
 
             if not self.handle_view_exception(e):
                 raise
 
         return
-
-        # super().on_model_change(form, UserDetail, is_created)
-
-        # if user:
-        #     if UserDetail.query.filter_by(user_id=user.id).first():
-        #         flash(f"Record not saved. '{form.email.data}' "
-        #               f"is used by another Member.")
-
-        #         return
-    #     pass
-    #     if is_created:
-    #         # user = User.query.filter_by(email=form.email.data).first()
-    #         # if user:
-    #         #     if UserDetail.query.filter_by(user_id=user.id).first():
-    #         #         flash(f"Record not saved. '{form.email.data}' "
-    #         #               f"is used by another Member.")
-
-    #         #         return
-    #         # else:
-    #         u = User(email=form.email.data,
-    #                  email_confirmed_at=datetime.utcnow(),
-    #                  password=current_app.user_manager.
-    #                  hash_password('Password1'),
-    #                  active=True)
-    #         db.session.add(u)
-
-    #         try:
-    #             db.session.flush()  # flush, so we can access a user.id if new
-    #             form.user_id.data = u.id
-    #             # model.user_id = user.id
-    #             # db.session.commit()
-    #         except Exception as e:
-    #             db.session.rollback()  # do this immediately for SQLAlchemy
-    #             if not self.handle_view_exception(e):
-    #                 raise
-    #         # super().on_model_change(form, model, is_created)
 
 
 class FilterSGByGrade(BaseSQLAFilter):

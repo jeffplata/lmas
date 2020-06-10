@@ -37,7 +37,8 @@ class User(Base, UserMixin):
         return self.id == other.id if other else False
 
     def __repr__(self):
-        return '<User %r>' % (self.username)
+        # return '<User %r>' % (self.username)
+        return f"<User {self.username or self.email}>"
 
     def __str__(self):
         return self.username or self.email
