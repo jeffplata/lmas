@@ -16,7 +16,7 @@ from .forms import UploadForm, MemberForm
 from werkzeug.utils import secure_filename
 from sqlalchemy import exc
 from gettext import gettext, ngettext
-# from datetime import datetime
+from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -110,46 +110,43 @@ class MemberView(AppLibModelView):
 
     def edit_form(self, obj):
         form = super(MemberView, self).edit_form(obj)
-        # email = request.args.get('email')
-        # if email and not form.email.data:
-        # TODO: disable autoflush
-        form.email.data = obj.user.email
+        if hasattr(obj.user, 'email'):
+            form.email.data = obj.user.email
+            form.user_id.data = str(obj.user.id)
         return form
 
-    # TODO: override validate_form() to check unique email address
-    #     if ok, save/flush on on_model_chage to get the id
-    #     and assign it to UserDetail.user_id
     def validate_form(self, form):
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             # the email is found in the User table
-            dup_email = UserDetail.query.filter_by(user_id=user.id).first()
-            if dup_email:
-                if (('user_id' not in form) or
-                        (('user_id' in form) and
-                            (form.user_id.data != str(user.id)))):
+            if UserDetail.query.filter_by(user_id=user.id).first():
+                if (form.user_id.data != str(user.id)):
                     # email already used in other UserDetail
-                    flash(f"Record cannot be saved because email "
-                          f"'{form.email.data}' "
+                    flash(f"'{form.email.data}' "
                           f"is used by another Member.", 'error')
                     return False
-
             form.user_id.data = str(user.id)
-
         return super(MemberView, self).validate_form(form)
 
     def on_model_change(self, form, UserDetail, is_created):
-        print("===================///===================")
-        print(form.user_id)
         try:
-            db.session.commit()
+            if not form.user_id.data:
+                # create a User
+                u = User(email=form.email.data,
+                         password=current_app.user_manager.
+                         hash_password(current_app.config['DEFAULT_USR_PWD']),
+                         email_confirmed_at=datetime.utcnow())
+                db.session.add(u)
+                db.session.flush()
+                print('*** user_id: ', u.id)
+                form.user_id.data = str(u.id)
         except SQLAlchemyError as e:
             db.session.rollback()
 
-            err_message = e.message if hasattr(e, 'message') else str(e)
-            if (err_message.find('unique constraint') != -1):
-                err_message = f"Member details cannot be saved." +\
-                              f"The email '{form.email.data}' is used by."
+            # err_message = e.message if hasattr(e, 'message') else str(e)
+            # if (err_message.find('unique constraint') != -1):
+            #     err_message = f"Member details cannot be saved." +\
+            #                   f"The email '{form.email.data}' is used by."
 
             if not self.handle_view_exception(e):
                 raise
