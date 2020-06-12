@@ -1,6 +1,5 @@
 from app import db
 from flask_user import UserMixin
-from sqlalchemy.ext.hybrid import hybrid_property
 
 
 # Define a base model for other database tables to inherit
@@ -90,50 +89,3 @@ class UserRoles(Base):
     role_id = db.Column(db.Integer(),
                         db.ForeignKey(
                             'auth_role.id', ondelete='CASCADE'))
-
-
-class UserDetail(Base):
-    __tablename__ = "auth_user_detail"
-    user_id = db.Column(db.Integer(),
-                        db.ForeignKey('auth_user.id', ondelete='CASCADE'),
-                        unique=True)
-    last_name = db.Column(db.String(128), nullable=False)
-    first_name = db.Column(db.String(128))
-    middle_name = db.Column(db.String(128))
-    suffix = db.Column(db.String(20))
-
-    user = db.relationship('User', uselist=False, backref='auth_user_detail')
-    salary = db.relationship(
-        'MemberSalary', uselist=False, backref='auth_user_detail')
-
-    db.UniqueConstraint(last_name, first_name, middle_name, suffix)
-
-    @hybrid_property
-    def full_name(self):
-        return "{}{}{}{}".format(
-            self.first_name,
-            " " + self.middle_name if self.middle_name else "",
-            " " + self.last_name if self.last_name else "",
-            " " + self.suffix if self.suffix else "")
-
-    @full_name.expression
-    def full_name(cls):
-        return cls.last_name
-
-    def __repr__(self):
-        return "User [{}] {}, {}".format(self.user_id, self.last_name,
-                                         self.first_name)
-
-    def __str__(self):
-        return "{}{}".format(
-            self.last_name,
-            ", " + self.first_name if self.first_name else "")
-
-
-class MemberSalary(Base):
-    __tablename__ = "member_salary"
-    user_id = db.Column(
-        db.Integer(),
-        db.ForeignKey('auth_user_detail.id', ondelete='CASCADE'))
-    amount = db.Column(db.Numeric(15, 2))
-    effective_date = db.Column(db.Date())

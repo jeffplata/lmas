@@ -5,8 +5,7 @@ from flask import url_for
 from flask_user import login_required
 from .forms import UserProfileForm, UserNameForm, MemberAccountForm
 from app.member.forms import MemberBankForm
-from app.user_models import UserDetail
-from app.member.models import Service, MemberBank, Bank
+from app.member.models import Service, MemberBank, Bank, UserDetail
 from flask_table import Table, Col, OptCol
 from flask_login import current_user
 from app import db

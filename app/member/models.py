@@ -1,5 +1,70 @@
 from app import db
 from app.user_models import Base
+from sqlalchemy.ext.hybrid import hybrid_property
+# from sqlalchemy import select
+from datetime import datetime
+
+
+# last_salary_query = MemberSalary.query.filter(MemberSalary.user_detail_id=)
+
+
+class UserDetail(Base):
+    __tablename__ = "auth_user_detail"
+    user_id = db.Column(db.Integer(),
+                        db.ForeignKey('auth_user.id', ondelete='CASCADE'),
+                        unique=True)
+    last_name = db.Column(db.String(128), nullable=False)
+    first_name = db.Column(db.String(128))
+    middle_name = db.Column(db.String(128))
+    suffix = db.Column(db.String(20))
+
+    user = db.relationship('User', uselist=False, backref='auth_user_detail')
+    # salary = db.relationship(
+    #     'MemberSalary', uselist=False, backref='auth_user_detail')
+
+    db.UniqueConstraint(last_name, first_name, middle_name, suffix)
+
+    @hybrid_property
+    def salary(self):
+        return MemberSalary.query.filter_by(user_detail_id=self.id).\
+            order_by(MemberSalary.id.desc()).first()
+
+    @salary.expression
+    def salary(cls):
+        return MemberSalary.query.filter_by(user_detail_id=cls.id).\
+            order_by(MemberSalary.id.desc()).first()
+
+    @hybrid_property
+    def full_name(self):
+        return "{}{}{}{}".format(
+            self.first_name,
+            " " + self.middle_name if self.middle_name else "",
+            " " + self.last_name if self.last_name else "",
+            " " + self.suffix if self.suffix else "")
+
+    @full_name.expression
+    def full_name(cls):
+        return cls.last_name + cls.first_name + cls.middle_name + cls.suffix
+
+    def __repr__(self):
+        return "User [{}] {}, {}".format(self.user_id, self.last_name,
+                                         self.first_name)
+
+    def __str__(self):
+        return "{}{}".format(
+            self.last_name,
+            ", " + self.first_name if self.first_name else "")
+
+
+class MemberSalary(Base):
+    __tablename__ = "member_salary"
+    user_detail_id = db.Column(
+        db.Integer(),
+        db.ForeignKey('auth_user_detail.id', ondelete='CASCADE'))
+    effective_date = db.Column(db.Date(), default=datetime.utcnow())
+    sg = db.Column(db.Integer())
+    step = db.Column(db.Integer())
+    salary = db.Column(db.Numeric(15, 2))
 
 
 class SalaryGrade(Base):
@@ -13,9 +78,11 @@ class SalaryGrade(Base):
     @classmethod
     def all_active(cls, all_active=True):
         if all_active:
-            return cls.query.filter_by(active=True).all()
+            return cls.query.filter_by(
+                active=True).order_by(cls.sg, cls.step).all()
         else:
-            return cls.query.filter(cls.active.isnot(True)).all()
+            return cls.query.filter(
+                cls.active.isnot(True)).order_by(cls.sg, cls.step).all()
 
     @classmethod
     def set_active(cls, active=True):

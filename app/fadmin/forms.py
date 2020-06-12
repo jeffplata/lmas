@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField, HiddenField
+from wtforms import SubmitField, StringField, HiddenField, SelectField
 from wtforms.validators import DataRequired, Email
 from flask_wtf.file import FileField
+from flask_admin.form.widgets import Select2Widget
 
 
 class UploadForm(FlaskForm):
@@ -13,8 +14,10 @@ class UploadForm(FlaskForm):
 
 class MemberForm(FlaskForm):
     user_id = HiddenField()
+    salary = HiddenField()
     email = StringField(validators=[DataRequired(), Email()])
     last_name = StringField(validators=[DataRequired()])
     first_name = StringField(validators=[DataRequired()])
     middle_name = StringField()
     suffix = StringField()
+    SGSI = SelectField('Salary', coerce=int, widget=Select2Widget())

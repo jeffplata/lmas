@@ -8,9 +8,9 @@ from flask_user import current_user
 from flask import current_app, url_for, flash, redirect, request
 
 from app import db
-from app.user_models import User, Role, UserDetail
+from app.user_models import User, Role
 from app.member.models import Service, Bank, MemberBank, Loan,\
-    SalaryGrade
+    SalaryGrade, UserDetail
 from wtforms.fields.simple import TextAreaField
 from .forms import UploadForm, MemberForm
 from werkzeug.utils import secure_filename
@@ -100,53 +100,77 @@ class LoanView(AppLibModelView):
     column_labels = {'user.detail.full_name': 'Borrower'}
 
 
+def SGSI_choices():
+    salaries = SalaryGrade.all_active()
+    return [(item.id, f"{item.sg}-{item.step} [{item.salary:,.0f}]")
+            for item in salaries]
+
+
 class MemberView(AppLibModelView):
     form = MemberForm
-    create_template = 'fadmin/create_member.html'
-    column_list = ('id', 'user.email', 'full_name', 'salary.amount')
-    column_labels = {'user.email': 'Email', 'salary.amount': 'Salary'}
+    # create_template = 'fadmin/create_member.html'
+    column_list = ('id', 'user.email', 'full_name',
+                   'salary.sg', 'salary.step', 'salary.salary')
+    column_labels = {'user.email': 'Email', 'salary.sg': 'SG',
+                     'salary.step': 'Step', 'salary.salary': 'Salary'}
     column_sortable_list = column_list
     column_default_sort = ('id')
 
+    # since custom 'form' was used (MemberForm),
+    #   edit_form and create_form should be defined
+    #   in order for the salary choices to work,
+    #   otherwise, form_overrides and form_args
+    #   would suffice.
+
     def edit_form(self, obj):
         form = super(MemberView, self).edit_form(obj)
-        if hasattr(obj.user, 'email'):
-            form.email.data = obj.user.email
-            form.user_id.data = str(obj.user.id)
+        # if hasattr(obj.user, 'email'):
+        form.email.data = obj.user.email
+        form.user_id.data = str(obj.user.id)
+        form.salary.data = f"{obj.salary.sg}-{obj.salary.step} "\
+                           f"[{obj.salary.salary:,.0f}]"
+        form.SGSI.choices = SGSI_choices()
+        return form
+
+    def create_form(self):
+        form = super(MemberView, self).edit_form()
+        form.SGSI.choices = SGSI_choices()
         return form
 
     def validate_form(self, form):
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            # the email is found in the User table
-            if UserDetail.query.filter_by(user_id=user.id).first():
-                if (form.user_id.data != str(user.id)):
-                    # email already used in other UserDetail
-                    flash(f"'{form.email.data}' "
-                          f"is used by another Member.", 'error')
-                    return False
-            form.user_id.data = str(user.id)
-        return super(MemberView, self).validate_form(form)
+        if request.form:
+            user = User.query.filter_by(email=request.form['email']).first()
+            if user:
+                # the email is found in the User table
+                if UserDetail.query.filter_by(user_id=user.id).first():
+                    if (request.form['user_id'] != str(user.id)):
+                        # email already used in other UserDetail
+                        flash(f"Email '{request.form['email']}' "
+                              f"is used by another Member.", 'error')
+                        return False
+                form.user_id.data = str(user.id)
+            else:
+                form.user_id.data = ''
+                # TODO: Do not create new user record when changing emails;
+                #   replace the old email in the user record instead
+
+            return super(MemberView, self).validate_form(form)
 
     def on_model_change(self, form, UserDetail, is_created):
         try:
             if not form.user_id.data:
                 # create a User
-                u = User(email=form.email.data,
+                u = User(email=request.form['email'],
                          password=current_app.user_manager.
                          hash_password(current_app.config['DEFAULT_USR_PWD']),
-                         email_confirmed_at=datetime.utcnow())
+                         email_confirmed_at=datetime.utcnow(),
+                         active=True)
+                u.detail = UserDetail
                 db.session.add(u)
-                db.session.flush()
-                print('*** user_id: ', u.id)
-                form.user_id.data = str(u.id)
+            if not form.salary.data:
+                db.session.commit()
         except SQLAlchemyError as e:
             db.session.rollback()
-
-            # err_message = e.message if hasattr(e, 'message') else str(e)
-            # if (err_message.find('unique constraint') != -1):
-            #     err_message = f"Member details cannot be saved." +\
-            #                   f"The email '{form.email.data}' is used by."
 
             if not self.handle_view_exception(e):
                 raise
@@ -210,6 +234,11 @@ class SalaryGradeView(AppLibModelView):
     def action_set_inactive(self, ids):
         do_change_active(self, ids, False)
         return
+
+    @expose('/')
+    def index_view(self):
+        self._refresh_filters_cache()
+        return super(SalaryGradeView, self).index_view()
 
 
 def do_change_active(self, ids, active=True):
