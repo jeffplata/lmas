@@ -127,8 +127,9 @@ class MemberView(AppLibModelView):
         # if hasattr(obj.user, 'email'):
         form.email.data = obj.user.email
         form.user_id.data = str(obj.user.id)
-        form.salary.data = f"{obj.salary.sg}-{obj.salary.step} "\
-                           f"[{obj.salary.salary:,.0f}]"
+        if obj.salary:
+            form.salary.data = f"{obj.salary.sg}-{obj.salary.step} "\
+                               f"[{obj.salary.salary:,.0f}]"
         form.SGSI.choices = SGSI_choices()
         return form
 

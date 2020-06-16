@@ -1,9 +1,9 @@
 from app import db
 from app.user_models import Base
 from sqlalchemy.ext.hybrid import hybrid_property
+from datetime import datetime
 from sqlalchemy import select, and_, outerjoin
 from sqlalchemy.orm import aliased
-from datetime import datetime
 
 
 class UserDetail(Base):
@@ -17,6 +17,8 @@ class UserDetail(Base):
     suffix = db.Column(db.String(20))
 
     user = db.relationship('User', uselist=False, backref='auth_user_detail')
+    # salary = db.relationship(latest_salaries, uselist=False, viewonly=True)
+
     # salary = db.relationship(
     #     'MemberSalary', uselist=False, backref='auth_user_detail')
 
@@ -70,10 +72,16 @@ newer_salaries = aliased(MemberSalary)
 latest_salaries_query = select([MemberSalary]).\
     select_from(
         outerjoin(MemberSalary, newer_salaries,
-            and_(newer_salaries.user_detail_id == MemberSalary.user_detail_id,
-                 newer_salaries.id > MemberSalary.id))).\
+                  and_(newer_salaries.user_detail_id ==
+                       MemberSalary.user_detail_id,
+                       newer_salaries.id > MemberSalary.id))).\
     where(newer_salaries.id == None).\
     alias()
+
+latest_salaries = aliased(MemberSalary, latest_salaries_query)
+
+UserDetail.salary = db.relationship(
+    latest_salaries, uselist=False, viewonly=True)
 
 
 class SalaryGrade(Base):
