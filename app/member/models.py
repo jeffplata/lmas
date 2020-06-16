@@ -1,11 +1,9 @@
 from app import db
 from app.user_models import Base
 from sqlalchemy.ext.hybrid import hybrid_property
-# from sqlalchemy import select
+from sqlalchemy import select, and_, outerjoin
+from sqlalchemy.orm import aliased
 from datetime import datetime
-
-
-# last_salary_query = MemberSalary.query.filter(MemberSalary.user_detail_id=)
 
 
 class UserDetail(Base):
@@ -24,15 +22,15 @@ class UserDetail(Base):
 
     db.UniqueConstraint(last_name, first_name, middle_name, suffix)
 
-    @hybrid_property
-    def salary(self):
-        return MemberSalary.query.filter_by(user_detail_id=self.id).\
-            order_by(MemberSalary.id.desc()).first()
+    # @hybrid_property
+    # def salary(self):
+    #     return MemberSalary.query.filter_by(user_detail_id=self.id).\
+    #         order_by(MemberSalary.id.desc()).first()
 
-    @salary.expression
-    def salary(cls):
-        return MemberSalary.query.filter_by(user_detail_id=cls.id).\
-            order_by(MemberSalary.id.desc()).first()
+    # @salary.expression
+    # def salary(cls):
+    #     return MemberSalary.query.filter_by(user_detail_id=cls.id).\
+    #         order_by(MemberSalary.id.desc()).first()
 
     @hybrid_property
     def full_name(self):
@@ -65,6 +63,17 @@ class MemberSalary(Base):
     sg = db.Column(db.Integer())
     step = db.Column(db.Integer())
     salary = db.Column(db.Numeric(15, 2))
+
+
+newer_salaries = aliased(MemberSalary)
+
+latest_salaries_query = select([MemberSalary]).\
+    select_from(
+        outerjoin(MemberSalary, newer_salaries,
+            and_(newer_salaries.user_detail_id == MemberSalary.user_detail_id,
+                 newer_salaries.id > MemberSalary.id))).\
+    where(newer_salaries.id == None).\
+    alias()
 
 
 class SalaryGrade(Base):
