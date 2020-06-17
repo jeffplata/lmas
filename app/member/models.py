@@ -75,7 +75,7 @@ latest_salaries_query = select([MemberSalary]).\
                   and_(newer_salaries.user_detail_id ==
                        MemberSalary.user_detail_id,
                        newer_salaries.id > MemberSalary.id))).\
-    where(newer_salaries.id == None).\
+    where(newer_salaries.id is None).\
     alias()
 
 latest_salaries = aliased(MemberSalary, latest_salaries_query)

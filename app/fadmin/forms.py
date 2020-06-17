@@ -14,7 +14,7 @@ class UploadForm(FlaskForm):
 
 class MemberForm(FlaskForm):
     user_id = HiddenField()
-    salary = HiddenField()
+    salary_data = HiddenField()
     email = StringField(validators=[DataRequired(), Email()])
     last_name = StringField(validators=[DataRequired()])
     first_name = StringField(validators=[DataRequired()])

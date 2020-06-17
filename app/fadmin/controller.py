@@ -102,7 +102,8 @@ class LoanView(AppLibModelView):
 
 def SGSI_choices():
     salaries = SalaryGrade.all_active()
-    return [(item.id, f"{item.sg}-{item.step} [{item.salary:,.0f}]")
+    return [(-1, '---')] +\
+        [(item.id, f"{item.sg}-{item.step} [{item.salary:,.0f}]")
             for item in salaries]
 
 
@@ -128,8 +129,8 @@ class MemberView(AppLibModelView):
         form.email.data = obj.user.email
         form.user_id.data = str(obj.user.id)
         if obj.salary:
-            form.salary.data = f"{obj.salary.sg}-{obj.salary.step} "\
-                               f"[{obj.salary.salary:,.0f}]"
+            form.salary_data.data = f"{obj.salary.sg}-{obj.salary.step} "\
+                                    f"[{obj.salary.salary:,.0f}]"
         form.SGSI.choices = SGSI_choices()
         return form
 
@@ -168,7 +169,9 @@ class MemberView(AppLibModelView):
                          active=True)
                 u.detail = UserDetail
                 db.session.add(u)
-            if not form.salary.data:
+                # TODO: add salaries relationship to UserDetail model
+                # if not form.salary_data.data:
+                #     if form.SGSI.data != -1:
                 db.session.commit()
         except SQLAlchemyError as e:
             db.session.rollback()
