@@ -10,7 +10,7 @@ from flask import current_app, url_for, flash, redirect, request
 from app import db
 from app.user_models import User, Role
 from app.member.models import Service, Bank, MemberBank, Loan,\
-    SalaryGrade, UserDetail
+    SalaryGrade, UserDetail, MemberSalary
 from wtforms.fields.simple import TextAreaField
 from .forms import UploadForm, MemberForm
 from werkzeug.utils import secure_filename
@@ -18,6 +18,7 @@ from sqlalchemy import exc
 from gettext import gettext, ngettext
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
+import re
 
 
 class MyAdminIndexView(AdminIndexView):
@@ -109,13 +110,15 @@ def SGSI_choices():
 
 class MemberView(AppLibModelView):
     form = MemberForm
-    # create_template = 'fadmin/create_member.html'
     column_list = ('id', 'user.email', 'full_name',
                    'salary.sg', 'salary.step', 'salary.salary')
     column_labels = {'user.email': 'Email', 'salary.sg': 'SG',
                      'salary.step': 'Step', 'salary.salary': 'Salary'}
-    column_sortable_list = column_list
+    # column_sortable_list = column_list
+    column_sortable_list = ('id', 'user.email', 'full_name',
+                            ('salary.sg', 'salary.sg'))
     column_default_sort = ('id')
+    column_filters = [MemberSalary.salary]
 
     # since custom 'form' was used (MemberForm),
     #   edit_form and create_form should be defined
@@ -125,13 +128,14 @@ class MemberView(AppLibModelView):
 
     def edit_form(self, obj):
         form = super(MemberView, self).edit_form(obj)
-        # if hasattr(obj.user, 'email'):
         form.email.data = obj.user.email
         form.user_id.data = str(obj.user.id)
-        if obj.salary:
+        form.SGSI.choices = SGSI_choices()
+        if bool(obj.salary):
             form.salary_data.data = f"{obj.salary.sg}-{obj.salary.step} "\
                                     f"[{obj.salary.salary:,.0f}]"
-        form.SGSI.choices = SGSI_choices()
+            form.SGSI.data = [x[0] for x in form.SGSI.choices
+                              if x[1] == form.salary_data.data][0]
         return form
 
     def create_form(self):
@@ -156,6 +160,10 @@ class MemberView(AppLibModelView):
                 # TODO: Do not create new user record when changing emails;
                 #   replace the old email in the user record instead
 
+            if form.salary_data.data and (request.form['SGSI'] == '-1'):
+                flash(f"Salary cannot be changed to 'None'.", 'error')
+                return False
+
             return super(MemberView, self).validate_form(form)
 
     def on_model_change(self, form, UserDetail, is_created):
@@ -169,10 +177,28 @@ class MemberView(AppLibModelView):
                          active=True)
                 u.detail = UserDetail
                 db.session.add(u)
-                # TODO: add salaries relationship to UserDetail model
-                # if not form.salary_data.data:
-                #     if form.SGSI.data != -1:
-                db.session.commit()
+
+            # if no salary set
+            if not form.salary_data.data:
+                if request.form['SGSI'] == '-1':
+                    # no change in salary
+                    return
+
+            s = dict(form.SGSI.choices).get(int(request.form['SGSI']))
+            update_salary = (form.salary_data.data != s)
+
+            if update_salary:
+                s = re.search(r'(.+)-(.+) \[(.+)\]', s.replace(',', ''))
+                member_salary = MemberSalary(
+                    user_detail_id=UserDetail.id,
+                    sg=s.group(1),
+                    step=s.group(2),
+                    salary=s.group(3),
+                    effective_date=datetime.utcnow())
+                db.session.add(member_salary)
+
+            db.session.commit()
+
         except SQLAlchemyError as e:
             db.session.rollback()
 

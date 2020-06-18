@@ -563,11 +563,11 @@ COPY public.auth_user (id, date_created, date_modified, username, email, passwor
 --
 
 COPY public.auth_user_detail (id, date_created, date_modified, user_id, last_name, first_name, middle_name, suffix) FROM stdin;
-3	2020-05-31 19:50:14.637292	2020-06-11 17:19:48.462735	10	Test Lastname	Test Firstname	Test Middle	
-13	2020-06-11 23:37:21.885985	2020-06-11 23:37:21.885985	47	Roxani	Super		Bebe
-6	2020-06-09 07:35:00.748267	2020-06-12 18:20:36.845336	46	Plata	Joeffrey		
-2	2020-05-04 01:01:16	2020-06-12 18:23:48.377437	5	Agana	Ian	O	Jr
-1	\N	2020-06-12 18:24:54.050168	4	Plata	Jeff	M	the Great
+1	\N	2020-06-18 18:50:31.769594	4	Plata	Jeff	M	the Great
+13	2020-06-11 23:37:21.885985	2020-06-18 21:27:13.513667	47	Roxani	Super		Bebe
+2	2020-05-04 01:01:16	2020-06-18 21:27:51.867413	5	Agana	Ian	O	Jr
+6	2020-06-09 07:35:00.748267	2020-06-18 21:36:07.584048	46	Plata	Joeffrey		
+3	2020-05-31 19:50:14.637292	2020-06-18 21:36:26.068111	10	Test Lastname	Test Firstname	Test Middle	
 \.
 
 
@@ -634,6 +634,14 @@ COPY public.member_bank (id, date_created, date_modified, bank_id, user_id, acco
 --
 
 COPY public.member_salary (id, date_created, date_modified, effective_date, sg, step, user_detail_id, salary) FROM stdin;
+1	2020-06-18 18:17:48.510146	2020-06-18 18:17:48.510146	2020-06-18	9	2	13	18125.00
+2	2020-06-18 18:27:53.885724	2020-06-18 18:27:53.885724	2020-06-18	1	1	13	11068.00
+3	2020-06-18 18:28:23.568843	2020-06-18 18:28:23.568843	2020-06-18	11	1	13	20754.00
+4	2020-06-18 18:36:19.470207	2020-06-18 18:36:19.470207	2020-06-18	20	1	1	51155.00
+5	2020-06-18 18:48:02.178842	2020-06-18 18:48:02.178842	2020-06-18	3	1	2	12466.00
+6	2020-06-18 21:27:13.513667	2020-06-18 21:27:13.513667	2020-06-18	9	2	13	18125.00
+7	2020-06-18 21:27:51.867413	2020-06-18 21:27:51.867413	2020-06-18	4	1	2	13214.00
+8	2020-06-18 21:29:21.838529	2020-06-18 21:29:21.838529	2020-06-18	20	2	6	51989.00
 \.
 
 
@@ -966,7 +974,7 @@ SELECT pg_catalog.setval('public.member_bank_id_seq', 24, true);
 -- Name: member_salary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.member_salary_id_seq', 1, false);
+SELECT pg_catalog.setval('public.member_salary_id_seq', 8, true);
 
 
 --
