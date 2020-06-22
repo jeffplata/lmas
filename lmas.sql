@@ -342,6 +342,46 @@ CREATE TABLE public.member_salary (
 ALTER TABLE public.member_salary OWNER TO postgres;
 
 --
+-- Name: member_salary_history; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.member_salary_history (
+    id integer NOT NULL,
+    date_created timestamp without time zone,
+    date_modified timestamp without time zone,
+    user_detail_id integer,
+    effective_date date,
+    sg integer,
+    step integer,
+    salary numeric(15,2)
+);
+
+
+ALTER TABLE public.member_salary_history OWNER TO postgres;
+
+--
+-- Name: member_salary_history_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.member_salary_history_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.member_salary_history_id_seq OWNER TO postgres;
+
+--
+-- Name: member_salary_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.member_salary_history_id_seq OWNED BY public.member_salary_history.id;
+
+
+--
 -- Name: member_salary_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -501,6 +541,13 @@ ALTER TABLE ONLY public.member_salary ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: member_salary_history id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.member_salary_history ALTER COLUMN id SET DEFAULT nextval('public.member_salary_history_id_seq'::regclass);
+
+
+--
 -- Name: salary_grade id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -519,7 +566,7 @@ ALTER TABLE ONLY public.service ALTER COLUMN id SET DEFAULT nextval('public.serv
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-97d889fefd76
+928b4e58738d
 \.
 
 
@@ -555,6 +602,7 @@ COPY public.auth_user (id, date_created, date_modified, username, email, passwor
 18	2020-06-09 07:35:00.748267	2020-06-09 07:35:00.748267	\N	sfsd@email.com	$2b$12$u1BdHfelGZywrkifDhqmgeGTmbfA8ytm565HoRzyaYeyMtqUnN7U.	2020-06-08 23:35:00.754902	t
 46	2020-06-11 23:15:56.97009	2020-06-11 23:17:41.391481	\N	new@email.com	$2b$12$aIAD1wsrkGtTXrG89CXWs.zDeV7KHbjlKfiJGabFaxUnmhHvduJ8S	2020-06-11 15:15:57.322203	t
 47	2020-06-11 23:37:21.885985	2020-06-11 23:37:53.181038	\N	roxani@gmail.com	$2b$12$uMCZ/yFu6jA68Y3DidRN8eGzdQZjejISEQp5dmtmg9o8UbJGS/8uy	2020-06-11 15:37:22.231064	t
+48	2020-06-23 03:41:38.334094	2020-06-23 03:41:38.334094	\N	newuser@email.com	$2b$12$Io.cQ64latF9uz15F78qleuuli8c9RbFzscSj1yqF6Fot5raY3yOa	2020-06-22 19:41:38.701729	t
 \.
 
 
@@ -563,9 +611,10 @@ COPY public.auth_user (id, date_created, date_modified, username, email, passwor
 --
 
 COPY public.auth_user_detail (id, date_created, date_modified, user_id, last_name, first_name, middle_name, suffix) FROM stdin;
-1	\N	2020-06-18 18:50:31.769594	4	Plata	Jeff	M	the Great
-13	2020-06-11 23:37:21.885985	2020-06-18 21:27:13.513667	47	Roxani	Super		Bebe
-2	2020-05-04 01:01:16	2020-06-18 21:27:51.867413	5	Agana	Ian	O	Jr
+2	2020-05-04 01:01:16	2020-06-23 03:32:46.452967	5	Agana	Ian	O	Jr
+1	\N	2020-06-23 03:33:09.358036	4	Plata	Jeff	M	the Great
+13	2020-06-11 23:37:21.885985	2020-06-23 03:34:07.789265	47	Roxani	Super		Bebe
+14	2020-06-23 03:41:38.334094	2020-06-23 03:41:38.334094	48	new last name	new first name	new middle	
 6	2020-06-09 07:35:00.748267	2020-06-18 21:36:07.584048	46	Plata	Joeffrey		
 3	2020-05-31 19:50:14.637292	2020-06-18 21:36:26.068111	10	Test Lastname	Test Firstname	Test Middle	
 \.
@@ -634,14 +683,18 @@ COPY public.member_bank (id, date_created, date_modified, bank_id, user_id, acco
 --
 
 COPY public.member_salary (id, date_created, date_modified, effective_date, sg, step, user_detail_id, salary) FROM stdin;
-1	2020-06-18 18:17:48.510146	2020-06-18 18:17:48.510146	2020-06-18	9	2	13	18125.00
-2	2020-06-18 18:27:53.885724	2020-06-18 18:27:53.885724	2020-06-18	1	1	13	11068.00
-3	2020-06-18 18:28:23.568843	2020-06-18 18:28:23.568843	2020-06-18	11	1	13	20754.00
-4	2020-06-18 18:36:19.470207	2020-06-18 18:36:19.470207	2020-06-18	20	1	1	51155.00
-5	2020-06-18 18:48:02.178842	2020-06-18 18:48:02.178842	2020-06-18	3	1	2	12466.00
-6	2020-06-18 21:27:13.513667	2020-06-18 21:27:13.513667	2020-06-18	9	2	13	18125.00
-7	2020-06-18 21:27:51.867413	2020-06-18 21:27:51.867413	2020-06-18	4	1	2	13214.00
-8	2020-06-18 21:29:21.838529	2020-06-18 21:29:21.838529	2020-06-18	20	2	6	51989.00
+10	2020-06-23 03:32:46.452967	2020-06-23 03:32:46.452967	2020-06-22	3	1	2	12466.00
+9	2020-06-23 03:07:51.526126	2020-06-23 03:33:09.358036	2020-06-22	20	1	1	51155.00
+11	2020-06-23 03:34:07.789265	2020-06-23 03:34:07.789265	2020-06-22	9	1	13	17975.00
+12	2020-06-23 03:41:38.334094	2020-06-23 03:41:38.334094	2020-06-22	11	1	14	20754.00
+\.
+
+
+--
+-- Data for Name: member_salary_history; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.member_salary_history (id, date_created, date_modified, user_detail_id, effective_date, sg, step, salary) FROM stdin;
 \.
 
 
@@ -932,14 +985,14 @@ SELECT pg_catalog.setval('public.auth_role_id_seq', 9, true);
 -- Name: auth_user_detail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
 --
 
-SELECT pg_catalog.setval('public.auth_user_detail_id_seq', 13, true);
+SELECT pg_catalog.setval('public.auth_user_detail_id_seq', 14, true);
 
 
 --
 -- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
 --
 
-SELECT pg_catalog.setval('public.auth_user_id_seq', 47, true);
+SELECT pg_catalog.setval('public.auth_user_id_seq', 48, true);
 
 
 --
@@ -971,10 +1024,17 @@ SELECT pg_catalog.setval('public.member_bank_id_seq', 24, true);
 
 
 --
+-- Name: member_salary_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.member_salary_history_id_seq', 7, true);
+
+
+--
 -- Name: member_salary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.member_salary_id_seq', 8, true);
+SELECT pg_catalog.setval('public.member_salary_id_seq', 12, true);
 
 
 --
@@ -1104,11 +1164,27 @@ ALTER TABLE ONLY public.member_bank
 
 
 --
+-- Name: member_salary_history member_salary_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.member_salary_history
+    ADD CONSTRAINT member_salary_history_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: member_salary member_salary_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.member_salary
     ADD CONSTRAINT member_salary_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: member_salary member_salary_user_detail_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.member_salary
+    ADD CONSTRAINT member_salary_user_detail_id_key UNIQUE (user_detail_id);
 
 
 --
@@ -1189,6 +1265,14 @@ ALTER TABLE ONLY public.member_bank
 
 ALTER TABLE ONLY public.member_bank
     ADD CONSTRAINT member_bank_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.auth_user(id) ON DELETE CASCADE;
+
+
+--
+-- Name: member_salary_history member_salary_history_user_detail_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.member_salary_history
+    ADD CONSTRAINT member_salary_history_user_detail_id_fkey FOREIGN KEY (user_detail_id) REFERENCES public.auth_user_detail(id) ON DELETE CASCADE;
 
 
 --

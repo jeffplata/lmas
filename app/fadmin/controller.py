@@ -10,7 +10,7 @@ from flask import current_app, url_for, flash, redirect, request
 from app import db
 from app.user_models import User, Role
 from app.member.models import Service, Bank, MemberBank, Loan,\
-    SalaryGrade, UserDetail, MemberSalary
+    SalaryGrade, UserDetail, MemberSalary, MemberSalaryHistory
 from wtforms.fields.simple import TextAreaField
 from .forms import UploadForm, MemberForm
 from werkzeug.utils import secure_filename
@@ -114,9 +114,9 @@ class MemberView(AppLibModelView):
                    'salary.sg', 'salary.step', 'salary.salary')
     column_labels = {'user.email': 'Email', 'salary.sg': 'SG',
                      'salary.step': 'Step', 'salary.salary': 'Salary'}
-    # column_sortable_list = column_list
-    column_sortable_list = ('id', 'user.email', 'full_name',
-                            ('salary.sg', 'salary.sg'))
+    column_sortable_list = column_list
+    # column_sortable_list = ('id', 'user.email', 'full_name',
+    #                         ['salary.sg', MemberSalary.sg])
     column_default_sort = ('id')
     column_filters = [MemberSalary.salary]
 
@@ -189,13 +189,34 @@ class MemberView(AppLibModelView):
 
             if update_salary:
                 s = re.search(r'(.+)-(.+) \[(.+)\]', s.replace(',', ''))
-                member_salary = MemberSalary(
-                    user_detail_id=UserDetail.id,
-                    sg=s.group(1),
-                    step=s.group(2),
-                    salary=s.group(3),
-                    effective_date=datetime.utcnow())
-                db.session.add(member_salary)
+                member_salary = MemberSalary.query.\
+                    filter_by(user_detail_id=UserDetail.id).first()
+                if not member_salary:
+                    member_salary = MemberSalary(
+                        user_detail_id=UserDetail.id,
+                        sg=s.group(1),
+                        step=s.group(2),
+                        salary=s.group(3),
+                        effective_date=datetime.utcnow())
+                    db.session.add(member_salary)
+                else:
+                    s2 = f"{member_salary.sg}-"\
+                         f"{member_salary.step} "\
+                         f"[{member_salary.salary:,.0f}]"
+                    print(member_salary.user_detail_id, '\n')
+                    print(s2)
+                    if s2 != s:
+                        sal_hist = MemberSalaryHistory(
+                            user_detail_id=member_salary.user_detail_id,
+                            sg=member_salary.sg,
+                            step=member_salary.step,
+                            salary=member_salary.salary,
+                            effective_date=member_salary.effective_date)
+                        db.session.add(sal_hist)
+                        member_salary.sg = s.group(1)
+                        member_salary.step = s.group(2)
+                        member_salary.salary = s.group(3)
+                        member_salary.effective_date = datetime.utcnow()
 
             db.session.commit()
 

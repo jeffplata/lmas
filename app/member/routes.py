@@ -1,11 +1,11 @@
 from app.member import bp
 
-from flask import flash, redirect, render_template, request, session,\
+from flask import flash, redirect, render_template, request,\
     url_for
 from flask_user import login_required
 from app.user_models import User
 from app.member.models import Service, AmortizationSchedule, Loan, Bank,\
-    MemberBank
+    MemberBank, UserDetail
 from .forms import ApplyForLoanForm, MemberBankForm
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -61,16 +61,20 @@ def apply_for_loan(user_id, service_id, reload='0'):
     user = User.query.get(user_id)
     if not user.detail:
         return render_template('member/member_not_defined.html')
+    member = UserDetail.query.filter_by(user_id=user_id).first()
     service = Service.query.get(service_id)
 
     balance = 5500
     process_fee = 250
-    default_loan_amount = 51000  # user.details.basic_salary * 0.8
+    # default_loan_amount = 51000  # user.details.basic_salary * 0.8
+    default_loan_amount = member.salary.salary
     default_loan_terms = service.max_term
 
     form = ApplyForLoanForm()
     form.terms.choices = [(x, str(x)) for x in
                           range(service.min_term, service.max_term + 1)]
+    form.amount.choices = [(x, str(x)) for x in
+                           range(int(member.salary.salary), 1000, -1000)]
 
     if request.form:
         form.amount.data = Decimal(request.form['amount'])

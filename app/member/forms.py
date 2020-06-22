@@ -2,12 +2,15 @@ from flask_wtf import FlaskForm
 from wtforms import DecimalField, SelectField, SubmitField,\
     StringField, BooleanField, HiddenField
 from wtforms.validators import DataRequired
+from flask_admin.form.widgets import Select2Widget
 
 
 class ApplyForLoanForm(FlaskForm):
     """Form for Apply Loan."""
 
-    amount = DecimalField(validators=[DataRequired()])
+    # amount = DecimalField(validators=[DataRequired()])
+    amount = SelectField(validators=[DataRequired()],
+                         coerce=float, choices=[], widget=Select2Widget())
     terms = SelectField(validators=[DataRequired()], choices=[], coerce=int)
     # continue_1 = SubmitField('Continue', render_kw={"class_": "btn-primary"})
 

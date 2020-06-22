@@ -2,8 +2,8 @@ from app import db
 from app.user_models import Base
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
-from sqlalchemy import select, and_, outerjoin
-from sqlalchemy.orm import aliased
+# from sqlalchemy import select, and_, outerjoin
+# from sqlalchemy.orm import aliased
 
 
 class UserDetail(Base):
@@ -17,6 +17,10 @@ class UserDetail(Base):
     suffix = db.Column(db.String(20))
 
     user = db.relationship('User', uselist=False, backref='auth_user_detail')
+    salary = db.relationship('MemberSalary', uselist=False,
+                             backref='auth_user_detail')
+    salary_history = db.relationship('MemberSalaryHistory', uselist=False,
+                                     backref='auth_user_detail')
     # salary = db.relationship(latest_salaries, uselist=False, viewonly=True)
 
     # salary = db.relationship(
@@ -60,6 +64,18 @@ class MemberSalary(Base):
     __tablename__ = "member_salary"
     user_detail_id = db.Column(
         db.Integer(),
+        db.ForeignKey('auth_user_detail.id', ondelete='CASCADE'),
+        unique=True)
+    effective_date = db.Column(db.Date(), default=datetime.utcnow())
+    sg = db.Column(db.Integer())
+    step = db.Column(db.Integer())
+    salary = db.Column(db.Numeric(15, 2))
+
+
+class MemberSalaryHistory(Base):
+    __tablename__ = "member_salary_history"
+    user_detail_id = db.Column(
+        db.Integer(),
         db.ForeignKey('auth_user_detail.id', ondelete='CASCADE'))
     effective_date = db.Column(db.Date(), default=datetime.utcnow())
     sg = db.Column(db.Integer())
@@ -67,21 +83,21 @@ class MemberSalary(Base):
     salary = db.Column(db.Numeric(15, 2))
 
 
-newer_salaries = aliased(MemberSalary)
+# newer_salaries = aliased(MemberSalary)
 
-latest_salaries_query = select([MemberSalary]).\
-    select_from(
-        outerjoin(MemberSalary, newer_salaries,
-                  and_(newer_salaries.user_detail_id ==
-                       MemberSalary.user_detail_id,
-                       newer_salaries.id > MemberSalary.id))).\
-    where(newer_salaries.id == None).\
-    alias()
+# latest_salaries_query = select([MemberSalary]).\
+#     select_from(
+#         outerjoin(MemberSalary, newer_salaries,
+#                   and_(newer_salaries.user_detail_id ==
+#                        MemberSalary.user_detail_id,
+#                        newer_salaries.id > MemberSalary.id))).\
+#     where(newer_salaries.id == None).\
+#     alias()
 
-latest_salaries = aliased(MemberSalary, latest_salaries_query)
+# latest_salaries = aliased(MemberSalary, latest_salaries_query)
 
-UserDetail.salary = db.relationship(
-    latest_salaries, uselist=False, viewonly=True)
+# UserDetail.salary = db.relationship(
+#     latest_salaries, uselist=False, viewonly=True)
 
 
 class SalaryGrade(Base):
