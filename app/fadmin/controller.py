@@ -4,13 +4,16 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_admin.menu import MenuLink
 from flask_admin.actions import action
+from flask_admin.model import typefmt
 from flask_user import current_user
-from flask import current_app, url_for, flash, redirect, request
+from flask import current_app, url_for, flash, redirect, request,\
+    has_request_context
 
 from app import db
 from app.user_models import User, Role
 from app.member.models import Service, Bank, MemberBank, Loan,\
-    SalaryGrade, UserDetail, MemberSalary, MemberSalaryHistory
+    SalaryGrade, UserDetail, MemberSalary, MemberSalaryHistory,\
+    LoanPayment, LoanPaymentBatch
 from wtforms.fields.simple import TextAreaField
 from .forms import UploadForm, MemberForm
 from werkzeug.utils import secure_filename
@@ -33,6 +36,15 @@ admin = Admin(name=app_name + ' Admin', template_mode='bootstrap3',
               index_view=MyAdminIndexView(template='fadmin/index.html'))
 
 
+def boolean_type_formatter(view, value):
+    return 'YES' if value else 'No'
+
+
+MY_DEFAULT_FORMATTERS = dict(typefmt.BASE_FORMATTERS)
+MY_DEFAULT_FORMATTERS.update({
+    bool: boolean_type_formatter})
+
+
 @current_app.before_first_request
 def assign_links_to_admin():
     admin.add_link(MenuLink(name='Public Website', category='',
@@ -48,6 +60,8 @@ class MyModelView(ModelView):
         return (not current_user.is_anonymous) and \
             current_user.has_roles('admin')
 
+    column_type_formatters = MY_DEFAULT_FORMATTERS
+
 
 class MyUserModelView(MyModelView):
 
@@ -56,6 +70,15 @@ class MyUserModelView(MyModelView):
         if not model.password:
             model.password = current_app.user_manager.hash_password(
                 current_app.config['DEFAULT_USR_PWD'])
+
+    def password_formatter(view, context, model, name):
+        s = model.password
+        return (s[:10] + '..') if len(s) > 12 else s
+
+    column_formatters = {'password': password_formatter}
+
+    column_list = ['id', 'username', 'email', 'employee_number',
+                   'password', 'email_confirmed_at', 'active', 'roles']
 
     form_excluded_columns = ['date_created', 'date_modified', 'password',
                              'email_confirmed_at']
@@ -74,31 +97,63 @@ class AppLibModelView(MyModelView):
 
 class ServiceModelView(AppLibModelView):
     form_overrides = {'description': TextAreaField}
-
-
-class FilterByBank(BaseSQLAFilter):
-    def apply(self, query, value, alias=None):
-        return query.filter_by(bank_id=value)
-
-    def operation(self):
-        return 'equals'
-
-    def get_options(self, view):
-        banks = Bank.query.all()
-        return [(b.id, b.short_name) for b in banks]
+    form_widget_args = {'description': {'rows': 5}}
 
 
 class MemberBankView(AppLibModelView):
+
+    class FilterByBank(BaseSQLAFilter):
+        def apply(self, query, value, alias=None):
+            return query.filter_by(bank_id=value)
+
+        def operation(self):
+            return 'equals'
+
+        def get_options(self, view):
+            banks = Bank.query.all()
+            return [(b.id, b.short_name) for b in banks]
+
     column_filters = [
         User.email,
         FilterByBank(column='bank_id', name='Bank')]
 
 
 class LoanView(AppLibModelView):
-    column_list = ('id', 'date_filed', 'user.detail.full_name', 'amount',
-                   'terms', 'previous_balance', 'processing_fee',
+
+    class FilterByBorrower(BaseSQLAFilter):
+        def apply(self, query, value, alias=None):
+            return query.filter_by(user_id=value)
+
+        def operation(self):
+            return 'equals'
+
+        def get_options(self, view):
+            if has_request_context():
+                members = UserDetail.query.all()
+                return [(b.user_id, b.full_name) for b in members]
+
+    class FilterByLoanType(BaseSQLAFilter):
+        def apply(self, query, value, alias=None):
+            return query.filter_by(service_id=value)
+
+        def operation(self):
+            return 'equals'
+
+        def get_options(self, view):
+            services = Service.query.all()
+            return [(b.id, b.name) for b in services]
+
+    column_list = ('id', 'date_filed', 'service.name', 'user.detail.full_name',
+                   'amount', 'terms', 'previous_balance', 'processing_fee',
                    'net_proceeds', 'first_due_date', 'last_due_date')
-    column_labels = {'user.detail.full_name': 'Borrower'}
+    column_sortable_list = column_list
+    column_labels = {'user.detail.full_name': 'Borrower',
+                     'service.name': 'Loan Type'}
+    column_filters = [
+        FilterByBorrower(column='user_id', name='Member'),
+        FilterByLoanType(column='service_id', name='Loan Type')]
+
+    list_template = 'fadmin/model/my_list_template.html'
 
 
 def SGSI_choices():
@@ -115,10 +170,9 @@ class MemberView(AppLibModelView):
     column_labels = {'user.email': 'Email', 'salary.sg': 'SG',
                      'salary.step': 'Step', 'salary.salary': 'Salary'}
     column_sortable_list = column_list
-    # column_sortable_list = ('id', 'user.email', 'full_name',
-    #                         ['salary.sg', MemberSalary.sg])
     column_default_sort = ('id')
     column_filters = [MemberSalary.salary]
+    column_searchable_list = ('user.email', 'full_name')
 
     # since custom 'form' was used (MemberForm),
     #   edit_form and create_form should be defined
@@ -365,6 +419,8 @@ admin.add_view(ServiceModelView(Service, db.session, category='Library'))
 admin.add_view(AppLibModelView(Bank, db.session, category='Library'))
 admin.add_view(MemberBankView(MemberBank, db.session, category='Library'))
 admin.add_view(LoanView(Loan, db.session, category='Loan'))
+admin.add_view(AppLibModelView(LoanPayment, db.session, category='Loan'))
+admin.add_view(AppLibModelView(LoanPaymentBatch, db.session, category='Loan'))
 admin.add_view(
     ImportDataView(
         name='Import Salary Grade', endpoint='import-data', category='Import'))

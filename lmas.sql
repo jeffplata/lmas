@@ -256,7 +256,8 @@ CREATE TABLE public.loan (
     last_due_date date,
     interest_rate numeric(15,2),
     memberbank_id integer,
-    date_filed timestamp without time zone
+    date_filed timestamp without time zone,
+    status character varying(20)
 );
 
 
@@ -282,6 +283,118 @@ ALTER TABLE public.loan_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.loan_id_seq OWNED BY public.loan.id;
+
+
+--
+-- Name: loan_payment; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.loan_payment (
+    id integer NOT NULL,
+    date_created timestamp without time zone,
+    date_modified timestamp without time zone,
+    batch_id integer,
+    loan_id integer NOT NULL,
+    amount_paid numeric(15,2)
+);
+
+
+ALTER TABLE public.loan_payment OWNER TO postgres;
+
+--
+-- Name: loan_payment_batch; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.loan_payment_batch (
+    id integer NOT NULL,
+    date_created timestamp without time zone,
+    date_modified timestamp without time zone,
+    trans_date date,
+    description character varying(128)
+);
+
+
+ALTER TABLE public.loan_payment_batch OWNER TO postgres;
+
+--
+-- Name: loan_payment_batch_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.loan_payment_batch_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.loan_payment_batch_id_seq OWNER TO postgres;
+
+--
+-- Name: loan_payment_batch_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.loan_payment_batch_id_seq OWNED BY public.loan_payment_batch.id;
+
+
+--
+-- Name: loan_payment_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.loan_payment_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.loan_payment_id_seq OWNER TO postgres;
+
+--
+-- Name: loan_payment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.loan_payment_id_seq OWNED BY public.loan_payment.id;
+
+
+--
+-- Name: loan_status; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.loan_status (
+    id integer NOT NULL,
+    date_created timestamp without time zone,
+    date_modified timestamp without time zone,
+    status character varying(20),
+    role_required character varying(50)
+);
+
+
+ALTER TABLE public.loan_status OWNER TO postgres;
+
+--
+-- Name: loan_status_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.loan_status_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.loan_status_id_seq OWNER TO postgres;
+
+--
+-- Name: loan_status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.loan_status_id_seq OWNED BY public.loan_status.id;
 
 
 --
@@ -527,6 +640,27 @@ ALTER TABLE ONLY public.loan ALTER COLUMN id SET DEFAULT nextval('public.loan_id
 
 
 --
+-- Name: loan_payment id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_payment ALTER COLUMN id SET DEFAULT nextval('public.loan_payment_id_seq'::regclass);
+
+
+--
+-- Name: loan_payment_batch id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_payment_batch ALTER COLUMN id SET DEFAULT nextval('public.loan_payment_batch_id_seq'::regclass);
+
+
+--
+-- Name: loan_status id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_status ALTER COLUMN id SET DEFAULT nextval('public.loan_status_id_seq'::regclass);
+
+
+--
 -- Name: member_bank id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -566,7 +700,7 @@ ALTER TABLE ONLY public.service ALTER COLUMN id SET DEFAULT nextval('public.serv
 --
 
 COPY public.alembic_version (version_num) FROM stdin;
-928b4e58738d
+693414269f42
 \.
 
 
@@ -603,6 +737,13 @@ COPY public.auth_user (id, date_created, date_modified, username, email, passwor
 46	2020-06-11 23:15:56.97009	2020-06-11 23:17:41.391481	\N	new@email.com	$2b$12$aIAD1wsrkGtTXrG89CXWs.zDeV7KHbjlKfiJGabFaxUnmhHvduJ8S	2020-06-11 15:15:57.322203	t
 47	2020-06-11 23:37:21.885985	2020-06-11 23:37:53.181038	\N	roxani@gmail.com	$2b$12$uMCZ/yFu6jA68Y3DidRN8eGzdQZjejISEQp5dmtmg9o8UbJGS/8uy	2020-06-11 15:37:22.231064	t
 48	2020-06-23 03:41:38.334094	2020-06-23 03:41:38.334094	\N	newuser@email.com	$2b$12$Io.cQ64latF9uz15F78qleuuli8c9RbFzscSj1yqF6Fot5raY3yOa	2020-06-22 19:41:38.701729	t
+56	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	checker	checker@example.com	$2b$12$2bjDdah4bf4pSMb2vydqWeyBo1QZAdrWYtWwfjGSFZuQTIMOJ6Om.	2020-07-10 00:25:55.116912	t
+57	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	endorser	endorser@example.com	$2b$12$4GNvfMTFYiwhO5c2GzNLMuQrWHsDTgAwhfB29PTidlcw82u3tdzqO	2020-07-10 00:25:55.430136	t
+58	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	committee	committee@example.com	$2b$12$BR2fZAsYA720jDA7I5QJkuPtz.BUoSYrgpdecTwNSZvQmPLMs.3JW	2020-07-10 00:25:55.741371	t
+59	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	ceo	ceo@example.com	$2b$12$0z.eL00aUGmcg7kHkfhCe.Mh4R3c.fA1IfgJEyZbf44LV0kwN.vR6	2020-07-10 00:25:56.053574	t
+60	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	manager	manager@example.com	$2b$12$Vn7qaNh7GreIgBsoWuf.Je4AfGslaPmbfHnIbp2tOUi5WnT2BPruK	2020-07-10 00:25:56.362792	t
+61	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	processor	processor@example.com	$2b$12$3vcWZXlPSn8/GGUfwao6qerhlbXnyjgq8m7JpnnDo/r/0S.7/JxYu	2020-07-10 00:25:56.67201	t
+62	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	payroll	payroll@example.com	$2b$12$8lNrHy1mF3PF.R24an2DdeMne5YucRCNvEVjoacYVVc4p/PiyM6EK	2020-07-10 00:25:56.980233	t
 \.
 
 
@@ -626,6 +767,13 @@ COPY public.auth_user_detail (id, date_created, date_modified, user_id, last_nam
 
 COPY public.auth_user_roles (id, date_created, date_modified, user_id, role_id) FROM stdin;
 1	2020-04-25 13:22:51.180363	2020-04-25 13:22:51.180363	1	1
+9	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	56	3
+10	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	57	4
+11	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	58	5
+12	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	59	6
+13	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	60	7
+14	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	61	8
+15	2020-07-10 08:25:54.753623	2020-07-10 08:25:54.753623	62	9
 \.
 
 
@@ -643,24 +791,56 @@ COPY public.bank (id, date_created, date_modified, short_name, name, active) FRO
 -- Data for Name: loan; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.loan (id, date_created, date_modified, service_id, user_id, amount, terms, previous_balance, processing_fee, net_proceeds, first_due_date, last_due_date, interest_rate, memberbank_id, date_filed) FROM stdin;
-1	2020-05-31 10:33:19.971434	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	8	2020-05-30 00:00:00
-2	2020-05-31 12:02:12.646651	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	9	2020-05-30 00:00:00
-3	2020-05-31 12:23:14.629017	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	10	2020-05-30 00:00:00
-4	2020-05-31 12:41:09.265635	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	\N	2020-05-30 00:00:00
-5	2020-05-31 13:44:05.03908	2020-06-05 05:52:59.302095	1	5	12000.00	24	5500.00	250.00	6250.00	2020-06-30	2022-05-30	1.00	13	2020-05-30 00:00:00
-6	2020-05-31 14:28:21.090377	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	8	2020-05-30 00:00:00
-7	2020-05-31 19:35:39.686816	2020-06-05 05:52:59.302095	2	5	51000.00	12	5500.00	250.00	45250.00	2020-06-30	2021-05-30	1.50	13	2020-05-30 00:00:00
-8	2020-05-31 19:37:37.749687	2020-06-05 05:52:59.302095	2	5	51000.00	12	5500.00	250.00	45250.00	2020-06-30	2021-05-30	1.50	14	2020-05-30 00:00:00
-9	2020-05-31 19:43:50.012939	2020-06-05 05:52:59.302095	1	5	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	13	2020-05-30 00:00:00
-10	2020-05-31 22:35:10.915618	2020-06-05 05:52:59.302095	1	5	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	13	2020-05-30 00:00:00
-11	2020-05-31 22:37:49.714409	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	15	2020-05-30 00:00:00
-12	2020-06-02 22:39:18.720206	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-02	2023-06-02	1.00	22	2020-06-02 00:00:00
-13	2020-06-02 23:04:56.277377	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-02	2023-06-02	1.00	8	2020-06-02 00:00:00
-14	2020-06-02 23:05:15.970137	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-02	2023-06-02	1.00	23	2020-06-02 00:00:00
-15	2020-06-02 23:05:45.54732	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-02	2023-06-02	1.00	8	2020-06-02 00:00:00
-16	2020-06-03 00:30:52.710507	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-03	2023-06-03	1.00	24	2020-06-03 00:00:00
-17	2020-06-03 18:06:04.271478	2020-06-05 05:52:59.302095	1	4	12000.00	24	5500.00	250.00	6250.00	2020-07-03	2022-06-03	1.00	8	2020-06-03 00:00:00
+COPY public.loan (id, date_created, date_modified, service_id, user_id, amount, terms, previous_balance, processing_fee, net_proceeds, first_due_date, last_due_date, interest_rate, memberbank_id, date_filed, status) FROM stdin;
+1	2020-05-31 10:33:19.971434	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	8	2020-05-30 00:00:00	submitted
+2	2020-05-31 12:02:12.646651	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	9	2020-05-30 00:00:00	submitted
+3	2020-05-31 12:23:14.629017	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	10	2020-05-30 00:00:00	submitted
+4	2020-05-31 12:41:09.265635	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	\N	2020-05-30 00:00:00	submitted
+5	2020-05-31 13:44:05.03908	2020-06-05 05:52:59.302095	1	5	12000.00	24	5500.00	250.00	6250.00	2020-06-30	2022-05-30	1.00	13	2020-05-30 00:00:00	submitted
+6	2020-05-31 14:28:21.090377	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	8	2020-05-30 00:00:00	submitted
+7	2020-05-31 19:35:39.686816	2020-06-05 05:52:59.302095	2	5	51000.00	12	5500.00	250.00	45250.00	2020-06-30	2021-05-30	1.50	13	2020-05-30 00:00:00	submitted
+8	2020-05-31 19:37:37.749687	2020-06-05 05:52:59.302095	2	5	51000.00	12	5500.00	250.00	45250.00	2020-06-30	2021-05-30	1.50	14	2020-05-30 00:00:00	submitted
+9	2020-05-31 19:43:50.012939	2020-06-05 05:52:59.302095	1	5	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	13	2020-05-30 00:00:00	submitted
+10	2020-05-31 22:35:10.915618	2020-06-05 05:52:59.302095	1	5	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	13	2020-05-30 00:00:00	submitted
+11	2020-05-31 22:37:49.714409	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-06-30	2023-05-30	1.00	15	2020-05-30 00:00:00	submitted
+12	2020-06-02 22:39:18.720206	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-02	2023-06-02	1.00	22	2020-06-02 00:00:00	submitted
+13	2020-06-02 23:04:56.277377	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-02	2023-06-02	1.00	8	2020-06-02 00:00:00	submitted
+14	2020-06-02 23:05:15.970137	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-02	2023-06-02	1.00	23	2020-06-02 00:00:00	submitted
+15	2020-06-02 23:05:45.54732	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-02	2023-06-02	1.00	8	2020-06-02 00:00:00	submitted
+16	2020-06-03 00:30:52.710507	2020-06-05 05:52:59.302095	1	4	51000.00	36	5500.00	250.00	45250.00	2020-07-03	2023-06-03	1.00	24	2020-06-03 00:00:00	submitted
+17	2020-06-03 18:06:04.271478	2020-06-05 05:52:59.302095	1	4	12000.00	24	5500.00	250.00	6250.00	2020-07-03	2022-06-03	1.00	8	2020-06-03 00:00:00	submitted
+\.
+
+
+--
+-- Data for Name: loan_payment; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.loan_payment (id, date_created, date_modified, batch_id, loan_id, amount_paid) FROM stdin;
+\.
+
+
+--
+-- Data for Name: loan_payment_batch; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.loan_payment_batch (id, date_created, date_modified, trans_date, description) FROM stdin;
+\.
+
+
+--
+-- Data for Name: loan_status; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.loan_status (id, date_created, date_modified, status, role_required) FROM stdin;
+1	2020-07-06 21:04:57.747612	2020-07-06 21:04:57.747612	submitted	\N
+2	2020-07-06 21:04:57.747612	2020-07-06 21:04:57.747612	checked	checker
+3	2020-07-06 21:04:57.747612	2020-07-06 21:04:57.747612	endorsed	endorser
+4	2020-07-06 21:04:57.747612	2020-07-06 21:04:57.747612	verified	committee
+5	2020-07-06 21:04:57.747612	2020-07-06 21:04:57.747612	approved	ceo
+6	2020-07-06 21:04:57.747612	2020-07-06 21:04:57.747612	processed	processor
+7	2020-07-06 21:04:57.747612	2020-07-06 21:04:57.747612	released	\N
+8	2020-07-06 21:04:57.747612	2020-07-06 21:04:57.747612	denied	\N
 \.
 
 
@@ -992,14 +1172,14 @@ SELECT pg_catalog.setval('public.auth_user_detail_id_seq', 14, true);
 -- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
 --
 
-SELECT pg_catalog.setval('public.auth_user_id_seq', 48, true);
+SELECT pg_catalog.setval('public.auth_user_id_seq', 62, true);
 
 
 --
 -- Name: auth_user_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: jeff
 --
 
-SELECT pg_catalog.setval('public.auth_user_roles_id_seq', 1, true);
+SELECT pg_catalog.setval('public.auth_user_roles_id_seq', 15, true);
 
 
 --
@@ -1014,6 +1194,27 @@ SELECT pg_catalog.setval('public.bank_id_seq', 2, true);
 --
 
 SELECT pg_catalog.setval('public.loan_id_seq', 17, true);
+
+
+--
+-- Name: loan_payment_batch_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.loan_payment_batch_id_seq', 1, false);
+
+
+--
+-- Name: loan_payment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.loan_payment_id_seq', 1, true);
+
+
+--
+-- Name: loan_status_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.loan_status_id_seq', 9, true);
 
 
 --
@@ -1148,11 +1349,43 @@ ALTER TABLE ONLY public.bank
 
 
 --
+-- Name: loan_payment_batch loan_payment_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_payment_batch
+    ADD CONSTRAINT loan_payment_batch_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: loan_payment loan_payment_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_payment
+    ADD CONSTRAINT loan_payment_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: loan loan_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.loan
     ADD CONSTRAINT loan_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: loan_status loan_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_status
+    ADD CONSTRAINT loan_status_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: loan_status loan_status_status_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_status
+    ADD CONSTRAINT loan_status_status_key UNIQUE (status);
 
 
 --
@@ -1233,6 +1466,22 @@ ALTER TABLE ONLY public.auth_user_roles
 
 ALTER TABLE ONLY public.auth_user_roles
     ADD CONSTRAINT auth_user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.auth_user(id) ON DELETE CASCADE;
+
+
+--
+-- Name: loan_payment loan_payment_batch_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_payment
+    ADD CONSTRAINT loan_payment_batch_id_fkey FOREIGN KEY (batch_id) REFERENCES public.loan_payment_batch(id) ON DELETE CASCADE;
+
+
+--
+-- Name: loan_payment loan_payment_loan_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.loan_payment
+    ADD CONSTRAINT loan_payment_loan_id_fkey FOREIGN KEY (loan_id) REFERENCES public.loan(id) ON DELETE CASCADE;
 
 
 --

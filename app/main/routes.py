@@ -1,12 +1,13 @@
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from app.main import bp
 from flask import render_template, flash, session, redirect, request
 from flask import url_for
 from flask_user import login_required
 from .forms import UserProfileForm, UserNameForm, MemberAccountForm
 from app.member.forms import MemberBankForm
-from app.member.models import Service, MemberBank, Bank, UserDetail
-from flask_table import Table, Col, OptCol
+from app.member.models import Service, MemberBank, Bank, UserDetail, Loan
+from flask_table import Table, Col, OptCol, DateCol, create_table
 from flask_login import current_user
 from app import db
 
@@ -28,9 +29,45 @@ def dashboard():
     form.remit_date.data = datetime.strptime('3/20/2020', '%m/%d/%Y')
     form.remit_amount.data = 20009
 
+    class DaysAgoCol(Col):
+        def td_format(self, content):
+            today = datetime.now()
+            age = relativedelta(today, content)
+            years = age.years
+            months = age.months
+            days = age.days
+            hours = age.hours
+            minutes = age.minutes
+            if years:
+                s = str(years) + (' years' if years > 1 else ' year')
+            elif months:
+                s = str(months) + (' months' if months > 1 else ' month')
+            elif days:
+                s = str(days) + (' days' if days > 1 else ' day')
+            elif hours:
+                s = str(hours) + (' hours' if hours > 1 else ' hour')
+            elif minutes:
+                s = str(minutes) + (' minutes' if minutes > 1 else ' minute')
+            else:
+                s = 'A few seconds '
+            return content.strftime('%Y-%m-%d') + ' (' + s + ' ago)'
+
+    LoanTable = create_table('LoanTable')\
+        .add_column('date_filed',
+                    DateCol('Date Filed', date_format='YYYY-MM-dd'))\
+        .add_column('date_filed', DaysAgoCol('Date Filed'))\
+        .add_column('amount', Col('Principal'))\
+        .add_column('terms', Col('Terms'))
+    LoanTable.classes = ['table', 'table-condensed', 'table-striped']
+
+    loans = Loan.query.filter_by(user_id=current_user.id)\
+        .order_by(Loan.date_filed.desc()).limit(5).all()
+    table = LoanTable(loans)
+
     services = Service.query.order_by(Service.id).all()
 
-    return render_template('main/dashboard.html', form=form, services=services)
+    return render_template('main/dashboard.html', form=form, services=services,
+                           loans=loans, table=table)
 
 
 class BankAccountTable(Table):

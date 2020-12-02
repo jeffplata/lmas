@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+{% set title = 'Loan ' ~ loan.id %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block styles %}
+  {{ super() }}
+  <style>
+  	.table td.fit {
+  		white-space: nowrap;
+  		width: 1px;
+  	}
+  </style>
+{% endblock %}
+
+{% block main_content %}
+
+<div class="col-xs-12 col-sm-12 col-md-10 col-lg-8 ">
+	<ol class="breadcrumb">
+		<li><a href="{{ url_for('member.loans', user_id=current_user.id) }}">Loans</a></li>
+		<li class="active">{{ title }}</li>
+	</ol>
+	<h3>{{ loan.service.name + " / " + loan.user.detail.full_name }}</h3>
+	<br>
+
+	{% if loan %}
+
+		{# <div class="col-sm-6 col-md-6 col-lg-6"> #}
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<b>Loan Details:</b>
+					<br>
+					<table class="table-condensed table">
+						<tr>
+							<td style="min-width: 100px;">Borrower:</td>
+							<td>{{ loan.user.detail.full_name }}</td>
+						</tr>
+						<tr>
+							<td>Loan Type:</td>
+							<td>{{ loan.service.name }}</td>
+						</tr>
+						<tr>
+							<td>Amount:</td>
+							<td>{{ loan.amount|money }}</td>
+						</tr>
+						<tr>
+							<td>Terms:</td>
+							<td>{{ loan.terms }} month{{loan.terms|pluralize}}</td>
+						</tr>{# 
+					</table>
+
+					<b>Adjustments:</b>
+					<br>
+					<table class="table-condensed1 "> #}
+						<tr>
+							<td style="min-width: 200px;">Previous Balance:</td>
+							<td>{{ loan.previous_balance|money }}</td>
+						</tr>
+						<tr>
+							<td>Processing Fee:</td>
+							<td>{{ loan.processing_fee|money }}</td>
+						</tr>
+						<tr>
+							<td>Net Proceeds:</td>
+							<td>{{ loan.net_proceeds|money }}</td>
+						</tr>
+					</table>
+					<b>Amortization:</b>
+					<br>
+					<table class="table-condensed">
+						<thead>
+							<th>No.</th>
+							<th>Due date</th>
+							<th>Principal</th>
+							<th>Interest</th>
+							<th>Total</th>
+							<th>Ideal Balance</th>
+						</thead>
+				        <tbody>
+				            {% for am in amortization %}
+				            <tr>
+				                <td>{{ loop.index }}</td>
+				                <td>{{ am.due_date | date }}</td>
+				                <td align="right">{{ am.principal | money }}</td>
+				                <td align="right">{{ am.interest | money }}</td>
+				                <td align="right" style="background-color : lightgray;">{{ (am.principal + am.interest) | money }}</td>
+				                <td align="right">{{ am.ideal_balance | money }}</td>
+				            </tr>
+				            {% endfor %}
+				        </tbody>
+					</table>
+				</div>
+			</div>
+
+		{# </div> #}
+
+	{% endif %}
+
+</div>
+
+{% endblock %}

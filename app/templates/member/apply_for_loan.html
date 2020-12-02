@@ -1,10 +1,21 @@
-{% import "bootstrap/wtf.html" as wtf %}
 {% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{# admin/lib.html is for the select2 widget #}
+{# {% import 'admin/lib.html' as lib with context %} #}
 
 {% set title = "Apply for Loan" %}
 
 {% block title %}
 {{ title }}
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  {# {{ lib.form_css() }} #}
+
+  
+  <link href="/admin/static/vendor/select2/select2.css?v=3.5.2" rel="stylesheet">
+  <link href="/admin/static/vendor/select2/select2-bootstrap3.css?v=1.4.6" rel="stylesheet">
 {% endblock %}
 
 {% block main_content %}
@@ -13,83 +24,81 @@
   <h3>{{ title }}</h3>
   <br>
 
-  <h4 class="h4-gray">Loan details</h4>
+<div class="row">
+    <div class="col-lg-4 col-md-5">
+        <h4 class="h4-gray">Loan details</h4>
 
-    <table class="table-condensed">
-    {# <table class="table"> #}
-        <tbody>
-            <tr>
-                <td align="right">For:</td>
-                <td><b>{{ user.detail.full_name }}</b></td>
-            </tr>
-            <tr>
-                <td align="right" valign="top">Loan Type:</td>
-                <td><b>{{ service.name }}</b><br>{# 
-                    {% set s = service.description.split('\n') %}
-                    <small class="text-muted">
-                    {% for l in s %}
-                    {{ l }}<br>
-                    {% endfor %}
-                    </small> #}
-                </td>
-            </tr>
-            <tr>
-                <td align="right">Interest Rate:</td>
-                <td><b>{{ service.interest_rate }}</b></td>
-            </tr>
-
-            
-            <form action="" method="POST">
-                {{ form.csrf_token() }}
+        <table class="table-condensed">
+            <tbody>
                 <tr>
-                    <td align="right">Amount:</td>
-                    <td><input type="text" class="form-control" id="amount" name="amount" required value="{{ form.amount.data }}"></td>
+                    <td align="right">For:</td>
+                    <td><b>{{ user.detail.full_name }}</b></td>
                 </tr>
                 <tr>
-                    <td align="right">Terms:</td>
-                    <td><select class="form-control" id="terms" name="terms">
-                        {% for i in form.terms.choices %}
-                            <option value={{ i[0] }} {% if i[0] == form.terms.data%}selected{% endif %}>{{ i[1] }}
-                            </option>
-                        {% endfor %}
-                        </select>
-                    </td>
+                    <td align="right" valign="top">Loan Type:</td>
+                    <td><b>{{ service.name }}</b><br></td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td style="padding-left: 20px;">
-                        <div class="row">
-                            <input type="submit" class="btn btn-primary" name="continue" value="Continue" formaction="{{ form.submit }}">
-                            <input type="submit" class="btn btn-default" name="recalc" value="Re-calculate" formaction="{{ form.submit }}">
-                        </div>
-                    </td>
+                    <td align="right">Interest Rate:</td>
+                    <td><b>{{ service.interest_rate }}</b></td>
                 </tr>
-            </form>
 
-        </tbody>
-    </table>
+                <form action="" method="POST">
+                    {{ form.csrf_token() }}
+                    <tr>
+                        <td align="right">Amount:</td>
+                        <td><select class="form-control" id="amount" name="amount">
+                            {% for i in form.amount.choices %}
+                                <option value={{ i[0] }} {% if i[0] == form.amount.data%}selected{% endif %}>{{ i[1] }}</option>
+                            {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">Terms:</td>
+                        <td><select class="form-control" id="terms" name="terms">
+                            {% for i in form.terms.choices %}
+                                <option value={{ i[0] }} {% if i[0] == form.terms.data%}selected{% endif %}>{{ i[1] }}
+                                </option>
+                            {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="padding-left: 20px;">
+                            <div class="row">
+                                <input type="submit" class="btn btn-primary" name="continue" value="Continue" formaction="{{ form.submit }}">
+                                <input type="submit" class="btn btn-default" name="recalc" value="Re-calculate" formaction="{{ form.submit }}">
+                            </div>
+                        </td>
+                    </tr>
+                </form>
 
-    <h4 class="h4-gray">Adjustments</h4>
-    <table class="table-condensed">
-        <tbody>
-            <tr>
-                <td align="right">Balance:</td>
-                <td align="right">{{ loan.previous_balance|money }}</td>
-            </tr>
-            <tr>
-                <td align="right">Processing Fee:</td>
-                <td align="right">{{ loan.processing_fee|money }}</td>
-            </tr>
-            <tr>
-                <td align="right">Net Proceeds:</td>
-                <td align="right"><font size="+1">{{ loan.net_proceeds|money }}</font></td>
-            </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-    <br>
+        <h4 class="h4-gray">Adjustments</h4>
+        <table class="table-condensed">
+            <tbody>
+                <tr>
+                    <td align="right">Balance:</td>
+                    <td align="right">{{ loan.previous_balance|money }}</td>
+                </tr>
+                <tr>
+                    <td align="right">Processing Fee:</td>
+                    <td align="right">{{ loan.processing_fee|money }}</td>
+                </tr>
+                <tr>
+                    <td align="right">Net Proceeds:</td>
+                    <td align="right"><font size="+1">{{ loan.net_proceeds|money }}</font></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-lg-6 col-md-6">
     <h4 class="h4-gray">Amortization Schedule</h4>
-    <div class="col-sm-12">
     <table class="table-condensed table-striped table-responsive">
         <thead>
             <tr>
@@ -117,5 +126,17 @@
     </div>
 
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    <script src="/admin/static/vendor/select2/select2.min.js?v=3.5.2" type="text/javascript"></script>
+    <script type="text/javascript">
+        $("#terms").select2();
+    </script>
+    <script type="text/javascript">
+        $("#amount").select2();
+    </script>
 
 {% endblock %}

@@ -7,3 +7,11 @@ Wednesday, 22 April, 2020 10:34:03 PM PST
 When using flask-mail or flask-user, and sending mail
   thru Gmail, always check that the 'Allow less secure
   Apps' is on in Gmail.
+
+Tuesday, 21 July, 2020 11:08 PM
+Check for context in Flask-Admin to avoid error in alembic, like this:
+
+        def get_options(self, view):
+            if has_request_context():
+                members = UserDetail.query.all()
+                return [(b.user_id, b.full_name) for b in members]

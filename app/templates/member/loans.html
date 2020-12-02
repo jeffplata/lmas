@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% set title = "Loans" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="col-xs-12 col-sm-12 col-md-10 col-lg-8 ">
+  <h1>{{ title }}</h1>
+  <br>
+
+    {% if loans %}
+        <table class="table table-condensed table-striped">
+            <thead>
+                <th>Date</th>
+                <th>Loan Type</th>
+                <th>Status</th>
+                <th>Principal</th>
+                <th>Deductions</th>
+                <th>Net Proceeds</th>
+                <th>Payments</th>
+                <th>Balance</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for loan in loans %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('member.loan', loan_id=loan.id) }}">
+                            {{ loan.date_filed|date }}
+                        </a>
+                    </td>
+                    <td>{{ loan.service.name }}</td>
+                    <td>Status</td>
+                    <td>{{ loan.amount|money }}</td>
+                    <td>{{ (loan.previous_balance + loan.processing_fee)|money }}</td>
+                    <td>{{ loan.net_proceeds|money }}</td>
+                    <td>Payments</td>
+                    <td>Balance</td>
+                    <td>{{ loan.date_filed|days_ago }}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('member.contributions', user_id=current_user.id) }}" style="float: right;">
+            see more... (TODO:)
+        </a>
+    {% else %}
+        You have no loan applications.
+        <a href="{{ url_for('member.services') }}" style="float: right;">apply for loan...</a>
+    {% endif %}
+
+</div>
+
+{% endblock %}

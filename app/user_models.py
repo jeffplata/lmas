@@ -6,9 +6,9 @@ from flask_user import UserMixin
 class Base(db.Model):
     __abstract__ = True
     id = db.Column(db.Integer, primary_key=True)
-    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
-    date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
-                              onupdate=db.func.current_timestamp())
+    date_created = db.Column(db.DateTime, server_default=db.func.current_timestamp())
+    date_modified = db.Column(db.DateTime, server_default=db.func.current_timestamp(),
+                              server_onupdate=db.func.current_timestamp())
 
 
 class User(Base, UserMixin):
@@ -24,6 +24,9 @@ class User(Base, UserMixin):
                                    default=db.func.current_timestamp())
     # is_enabled = db.Column(db.Boolean(), nullable=False, default=False)
     active = db.Column(db.Boolean())
+
+    employee_number = db.Column(db.String(20))
+    db.UniqueConstraint(employee_number)
 
     detail = db.relationship('UserDetail', uselist=False, backref='auth_user')
 

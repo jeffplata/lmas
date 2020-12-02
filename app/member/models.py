@@ -8,35 +8,27 @@ from datetime import datetime
 
 class UserDetail(Base):
     __tablename__ = "auth_user_detail"
-    user_id = db.Column(db.Integer(),
-                        db.ForeignKey('auth_user.id', ondelete='CASCADE'),
-                        unique=True)
+    user_id = db.Column(db.Integer())
+    # user_id = db.Column(db.Integer(),
+    #                     db.ForeignKey('auth_user.id', ondelete='CASCADE'),
+    #                     unique=True)
     last_name = db.Column(db.String(128), nullable=False)
     first_name = db.Column(db.String(128))
     middle_name = db.Column(db.String(128))
     suffix = db.Column(db.String(20))
+    employee_number = db.Column(db.String(20),
+                                db.ForeignKey('auth_user.employee_number',
+                                              ondelete='CASCADE'),
+                                unique=True)
+    email = db.Column(db.String(128))
 
     user = db.relationship('User', uselist=False, backref='auth_user_detail')
     salary = db.relationship('MemberSalary', uselist=False,
                              backref='auth_user_detail')
     salary_history = db.relationship('MemberSalaryHistory', uselist=False,
                                      backref='auth_user_detail')
-    # salary = db.relationship(latest_salaries, uselist=False, viewonly=True)
-
-    # salary = db.relationship(
-    #     'MemberSalary', uselist=False, backref='auth_user_detail')
 
     db.UniqueConstraint(last_name, first_name, middle_name, suffix)
-
-    # @hybrid_property
-    # def salary(self):
-    #     return MemberSalary.query.filter_by(user_detail_id=self.id).\
-    #         order_by(MemberSalary.id.desc()).first()
-
-    # @salary.expression
-    # def salary(cls):
-    #     return MemberSalary.query.filter_by(user_detail_id=cls.id).\
-    #         order_by(MemberSalary.id.desc()).first()
 
     @hybrid_property
     def full_name(self):
@@ -133,8 +125,21 @@ class Service(Base):
     active = db.Column(db.Boolean(), default=True)
 
 
+class Contribution(Base):
+    __tablename__ = 'contribution'
+    employee_number = db.Column(db.String(20),
+                                db.ForeignKey('auth_user.employee_number',
+                                              ondelete='CASCADE'))
+    trans_date = db.Column(db.Date())
+    period = db.Column(db.Date())
+    amount = db.Column(db.Numeric(15, 2))
+    contributor = db.Column(db.String(1), nullable=False)
+    # M = Member, E = Employer
+    trans_type = db.Column(db.String(3), nullable=False)
+    # REG = Regular, DIF = Differential
+
+
 class Loan(Base):
-    # __abstract__ = True
     __tablename__ = 'loan'
     service_id = db.Column(db.Integer(),
                            db.ForeignKey(
@@ -152,14 +157,44 @@ class Loan(Base):
     first_due_date = db.Column(db.Date(), nullable=False)
     last_due_date = db.Column(db.Date())
     memberbank_id = db.Column(db.Integer())
+    status = db.Column(db.String(20))
 
     user = db.relationship('User', uselist=False, backref='loan')
+    service = db.relationship('Service', uselist=False)
     # the bank reference is only for convenience
     #    user can remove his bank detail anytime
 
     def __repr__(self):
-        return '<Loan %r>' % (self.amount)
-        # return '<Loan {}, {}>'.format(self.user)
+        return f"{self.user.detail.last_name} {self.user.detail.first_name}, "\
+               f"{self.service.name}, {self.amount} [{self.id}]"
+
+
+class LoanStatus(Base):
+    __tablename__ = 'loan_status'
+    status = db.Column(db.String(20), unique=True)
+    role_required = db.Column(db.String(50))
+
+
+class LoanPaymentBatch(Base):
+    __tablename__ = 'loan_payment_batch'
+    trans_date = db.Column(db.Date())
+    description = db.Column(db.String(128))
+
+
+class LoanPayment(Base):
+    __tablename__ = 'loan_payment'
+    batch_id = db.Column(db.Integer(),
+                         db.ForeignKey(
+                         'loan_payment_batch.id', ondelete='CASCADE'))
+    loan_id = db.Column(db.Integer(),
+                        db.ForeignKey(
+                        'loan.id', ondelete='CASCADE'),
+                        nullable=False)
+    amount_paid = db.Column(db.Numeric(15, 2))
+
+    batch = db.relationship('LoanPaymentBatch', uselist=False,
+                            backref='loan_payment')
+    loan = db.relationship('Loan', uselist=False, backref='loan_payment')
 
 
 class AmortizationSchedule(db.Model):

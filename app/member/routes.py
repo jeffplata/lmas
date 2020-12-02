@@ -1,7 +1,7 @@
 from app.member import bp
 
 from flask import flash, redirect, render_template, request,\
-    url_for
+    url_for, abort
 from flask_user import login_required
 from app.user_models import User
 from app.member.models import Service, AmortizationSchedule, Loan, Bank,\
@@ -73,8 +73,10 @@ def apply_for_loan(user_id, service_id, reload='0'):
     form = ApplyForLoanForm()
     form.terms.choices = [(x, str(x)) for x in
                           range(service.min_term, service.max_term + 1)]
-    form.amount.choices = [(x, str(x)) for x in
-                           range(int(member.salary.salary), 1000, -1000)]
+    n = round(member.salary.salary, -3)
+    form.amount.choices =\
+        [(member.salary.salary, str(round(member.salary.salary, 0)))] +\
+        [(x, str(x)) for x in range(int(n), 1000, -1000)]
 
     if request.form:
         form.amount.data = Decimal(request.form['amount'])
@@ -109,7 +111,8 @@ def apply_for_loan(user_id, service_id, reload='0'):
         processing_fee=process_fee,
         net_proceeds=net_proceeds,
         first_due_date=amortization[0].due_date,
-        last_due_date=amortization[-1].due_date)
+        last_due_date=amortization[-1].due_date,
+        status='submitted')
 
     if form.validate_on_submit():
         if 'continue' in request.form:
@@ -199,6 +202,25 @@ def apply_for_loan_checkout():
                            amortization=amortization,
                            member_banks=member_banks,
                            form=form)
+
+
+@bp.route('/loans/<int:user_id>')
+@login_required
+def loans(user_id):
+    loans = Loan.query.filter_by(user_id=user_id)\
+        .order_by(Loan.date_filed.desc()).all()
+
+    return render_template('member/loans.html', loans=loans)
+
+
+@bp.route('/loan/<int:loan_id>')
+@login_required
+def loan(loan_id):
+    loan = Loan.query.filter_by(id=loan_id).first()
+    if not loan:
+        abort(404)
+
+    return render_template('member/loan.html', loan=loan)
 
 
 @bp.route('/contributions/<int:user_id>')

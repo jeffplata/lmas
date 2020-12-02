@@ -5,21 +5,12 @@
 {{ config.USER_APP_NAME }}
 {% endblock %}
 
-{% block head %}
-  {{ super() }}
-  <style>
-    .more-text {
-        color: green;
-    }
-  </style>
-{% endblock %}
-
 {% block main_content %}
+    
+    <h1>Dashboard</h1>
 
-{# <div class="container"> #}
-    {# <div class="row"> #}
-        <div class="col-sm-7 col-md-6 col-lg-5 ">
-            <h1>Dashboard</h1>
+    <div class="row">
+        <div class="col-sm-6 col-md-6 col-lg-6 ">
 
             <h4 class="h4-gray">Your account</h4>
 
@@ -42,15 +33,55 @@
 
                         </tbody>
                     </table>
-                    <a href="{{ url_for('member.contributions', user_id=current_user.id) }}">
-                        <div class="text-right">see more...</div>
-                    </a>
+                    <a href="{{ url_for('member.contributions', user_id=current_user.id) }}" style="float: right;">see more...</a>
 
                 </div>
 
             </div>
 
-            <br>
+
+            <h4 class="h4-gray">Your loans</h4>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% if loans %}
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <th>Date</th>
+                                <th>Loan Type</th>
+                                <th>Principal</th>
+                                <th>Remarks</th>
+                            </thead>
+                            <tbody>
+                                {% for loan in loans %}
+                                <tr>
+                                    <td>{{ loan.date_filed|date }}</td>
+                                    <td>{{ loan.service.name }}</td>
+                                    <td>{{ loan.amount|money }}</td>
+                                    <td>{% if loan.status %}
+                                        <span class="badge badge-default">{{ loan.status }}</span><br/>
+                                        {% endif %}
+                                        {{ loan.date_filed|days_ago }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <a href="{{ url_for('member.loans', user_id=current_user.id) }}" style="float: right;">
+                            see more...
+                        </a>
+                    {% else %}
+                        <div>
+                             You have no loan applications.
+                        </div>
+                        <a href="{{ url_for('member.services') }}" style="float: right;">apply for loan...</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-6 col-md-6 col-lg-6 ">
             <h4 class="h4-gray">Services</h4>
 
             {% if services %}
@@ -75,17 +106,14 @@
                             </tr>
                             {% endfor %}
                         </table>
-                    <a href="{{ url_for('member.services') }}">
-                        <div class="text-right">see more...</div>
+                    <a href="{{ url_for('member.services') }}" style="float: right;">see more...
                     </a>
 
                     </div>
                 </div>
             {% endif %}
-
-
         </div>
-    {# </div> #}
-{# </div> #}
+
+    </div>
 
 {% endblock %}

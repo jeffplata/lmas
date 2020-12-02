@@ -45,10 +45,9 @@ code {
 .h4-gray {
     color: gray;
 }
-/*
-.control-label {
-    margin-bottom: 0px;
-    margin-top: 0px
-    padding-top: 0px;
+
+.right-aligned-link {
+    text-align: right;
+    float: right;
+    /*color: green;*/
 }
-*/
