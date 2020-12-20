@@ -165,8 +165,11 @@ class Loan(Base):
     #    user can remove his bank detail anytime
 
     def __repr__(self):
-        return f"{self.user.detail.last_name} {self.user.detail.first_name}, "\
-               f"{self.service.name}, {self.amount} [{self.id}]"
+        if self.user.detail:
+            return f"{self.user.detail.last_name} {self.user.detail.first_name}, "\
+                   f"{self.service.name}, {self.amount} [{self.id}]"
+        else:
+            return "<detail not defined>"
 
 
 class LoanStatus(Base):

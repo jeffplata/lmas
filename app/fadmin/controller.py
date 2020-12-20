@@ -182,8 +182,9 @@ class MemberView(AppLibModelView):
 
     def edit_form(self, obj):
         form = super(MemberView, self).edit_form(obj)
-        form.email.data = obj.user.email
-        form.user_id.data = str(obj.user.id)
+        if obj.user:
+            form.email.data = obj.user.email
+            form.user_id.data = str(obj.user.id)
         form.SGSI.choices = SGSI_choices()
         if bool(obj.salary):
             form.salary_data.data = f"{obj.salary.sg}-{obj.salary.step} "\
